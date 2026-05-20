@@ -1638,7 +1638,7 @@ INSERT INTO categories (name, slug, description, icon_url, parent_category_id, i
 -- Insert platform settings
 INSERT INTO platform_settings (setting_key, setting_value, description) VALUES
 ('platform_name',               'Shop & Ship LED', 'Official platform name'),
-('platform_commission_default', '15',              'Default platform commission percentage'),
+('platform_commission_default', '0',              'Default platform commission percentage'),
 ('max_file_upload_size',        '10485760',        'Max file upload size in bytes (10 MB)'),
 ('email_verification_required', 'true',            'Whether email verification is required'),
 ('kyc_required_for_merchant',   'true',            'Whether KYC is required to become a merchant'),

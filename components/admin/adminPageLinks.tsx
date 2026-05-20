@@ -30,7 +30,10 @@ export default function PageLinks() {
       href: "/admin/applications",
     },
     // { name: t("admin.merchantPromotions") || "merchantPromotions", href: "/admin/promotions" },
-    { name: t("admin.upgradeRequests") || "upgradeRequests", href: "/admin/upgradeRequests" },
+    {
+      name: t("admin.upgradeRequests") || "upgradeRequests",
+      href: "/admin/upgrades",
+    },
     { name: t("admin.language"), href: "/admin/language" },
     { name: t("admin.settings"), href: "/admin/settings" },
   ];
