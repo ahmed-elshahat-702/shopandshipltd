@@ -76,8 +76,8 @@ export function HomeClient({
   const activeDeals = dealsData?.deals || [];
 
   const { data: newProducts, isLoading: loadingNew } = useSWR(
-    ["products-newest", { limit: 5, sortBy: "newest" }],
-    () => getProductsAction({ limit: 5, sortBy: "newest" }),
+    ["products-newest", { limit: 10, sortBy: "newest" }],
+    () => getProductsAction({ limit: 10, sortBy: "newest" }),
     { revalidateOnFocus: false, fallbackData: initialNewProducts },
   );
 
@@ -88,14 +88,14 @@ export function HomeClient({
   // );
 
   const { data: discountedProducts, isLoading: loadingDiscount } = useSWR(
-    ["products-discount", { limit: 5, sortBy: "discount" }],
-    () => getProductsAction({ limit: 5, sortBy: "discount" }),
+    ["products-discount", { limit: 10, sortBy: "discount" }],
+    () => getProductsAction({ limit: 10, sortBy: "discount" }),
     { revalidateOnFocus: false, fallbackData: initialDiscounted },
   );
 
   const renderSkeletons = () => (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-      {[...Array(5)].map((_, i) => (
+      {[...Array(10)].map((_, i) => (
         <div
           key={i}
           className="rounded-md overflow-hidden border border-border/40"

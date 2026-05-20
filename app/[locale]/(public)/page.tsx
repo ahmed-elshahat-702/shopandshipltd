@@ -1,7 +1,6 @@
-import { TopMerchants } from "@/components/TopMerchants";
-import { HomeClient } from "@/components/HomeClient";
-import { getProductsAction, getCategoriesAction } from "@/app/actions/products";
 import { getActiveDealsAction } from "@/app/actions/deals";
+import { getCategoriesAction, getProductsAction } from "@/app/actions/products";
+import { HomeClient } from "@/components/HomeClient";
 
 // Server component — pre-fetches all home-page data from Supabase
 export default async function HomePage() {
@@ -12,9 +11,9 @@ export default async function HomePage() {
     initialCategories,
     initialDealsData,
   ] = await Promise.all([
-    getProductsAction({ limit: 5, sortBy: "newest" }),
+    getProductsAction({ limit: 10, sortBy: "newest" }),
     // getProductsAction({ limit: 5, sortBy: "popular" }),
-    getProductsAction({ limit: 5, sortBy: "discount" }),
+    getProductsAction({ limit: 10, sortBy: "discount" }),
     getCategoriesAction(),
     getActiveDealsAction(),
   ]);
@@ -33,7 +32,7 @@ export default async function HomePage() {
       />
 
       {/* Server component: fetches verified merchants from Supabase */}
-      <TopMerchants />
+      {/* <TopMerchants /> */}
     </main>
   );
 }

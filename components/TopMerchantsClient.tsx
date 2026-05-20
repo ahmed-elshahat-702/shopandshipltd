@@ -2,7 +2,7 @@
 
 import { useUser } from "@/hooks/use-auth";
 import { Link } from "@/i18n/navigation";
-import { CheckCircle2, ChevronRight, Package, Store } from "lucide-react";
+import { CheckCircle2, ChevronRight, Store } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
@@ -69,7 +69,7 @@ export function TopMerchantsClient({ merchants }: { merchants: Merchant[] }) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {merchants.map((merchant) => {
-            const productCount = merchant.merchant_products?.[0]?.count ?? 0;
+            // const productCount = merchant.merchant_products?.[0]?.count ?? 0;
 
             return (
               <Link
@@ -120,7 +120,7 @@ export function TopMerchantsClient({ merchants }: { merchants: Merchant[] }) {
                   </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-border/50 flex items-center justify-between">
+                {/* <div className="mt-6 pt-4 border-t border-border/50 flex items-center justify-between">
                   <div className="text-xs font-medium text-muted-foreground text-center">
                     <div className="text-sm font-black text-foreground flex items-center gap-1 justify-center">
                       <Package size={12} />
@@ -140,7 +140,7 @@ export function TopMerchantsClient({ merchants }: { merchants: Merchant[] }) {
                     </div>
                     {t("common.sales")}
                   </div>
-                </div>
+                </div> */}
 
                 <div className="mt-4 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity flex justify-center">
                   <span className="text-primary text-[11px] font-black uppercase tracking-widest">
