@@ -2,6 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,17 +11,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Globe } from "lucide-react";
+import { Suspense } from "react";
 
-export function LanguageSwitcher() {
+function LanguageSwitcherInner() {
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations("common");
 
   const handleLanguageChange = (newLocale: string) => {
-    // Replace the current locale in the path with the new one
-    const newPathname = pathname.replace(`/${locale}`, `/${newLocale}`);
-    router.push(newPathname);
+    const params = searchParams.toString();
+    const newPathname = params ? `${pathname}?${params}` : pathname;
+    router.replace(newPathname, { locale: newLocale });
   };
 
   return (
@@ -46,5 +49,19 @@ export function LanguageSwitcher() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+export function LanguageSwitcher() {
+  return (
+    <Suspense
+      fallback={
+        <Button variant="ghost" size="icon" className="relative" disabled>
+          <Globe className="h-4 w-4" />
+        </Button>
+      }
+    >
+      <LanguageSwitcherInner />
+    </Suspense>
   );
 }

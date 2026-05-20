@@ -1,17 +1,22 @@
 "use client";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Check, Globe } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
+import { Suspense } from "react";
 
-export default function LanguageClient() {
+function LanguageClientInner() {
   const t = useTranslations();
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleLanguageChange = (newLocale: "ar" | "en") => {
-    router.replace(pathname, { locale: newLocale });
+    const params = searchParams.toString();
+    const newPathname = params ? `${pathname}?${params}` : pathname;
+    router.replace(newPathname, { locale: newLocale });
   };
 
   return (
@@ -69,5 +74,13 @@ export default function LanguageClient() {
         ))}
       </div>
     </section>
+  );
+}
+
+export default function LanguageClient() {
+  return (
+    <Suspense fallback={<div className="h-40 w-full bg-muted animate-pulse rounded-[2.5rem] mt-10 max-w-4xl mx-auto" />}>
+      <LanguageClientInner />
+    </Suspense>
   );
 }
