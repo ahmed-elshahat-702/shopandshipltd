@@ -255,11 +255,11 @@ export default function MerchantLevelsContent({
                         className="text-primary opacity-60 group-hover/item:opacity-100"
                       />
                       <span className="text-sm font-bold text-muted-foreground">
-                        {t("merchant.minSalesAmount")}
+                        {t("merchant.minWalletBalance")}
                       </span>
                     </div>
                     <span className="text-sm font-black text-foreground">
-                      ${level.min_sales_amount?.toLocaleString() || "0"}
+                      ${level.min_wallet_balance?.toLocaleString() || "0"}
                     </span>
                   </div>
 

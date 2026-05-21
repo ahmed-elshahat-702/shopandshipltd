@@ -1026,7 +1026,7 @@
     "orderCancelled": "تم إلغاء الطلب",
     "profitRatio": "نسبة الربح",
     "maxProducts": "الحد الأقصى للمنتجات",
-    "minSalesAmount": "الحد الأدنى لمبلغ المبيعات",
+    "minWalletBalance": "الحد الأدنى لرصيد المحفظة",
     "currentBadge": "الحالي",
     "unlockedBadge": "مفتوح",
     "lockedBadge": "مقفل",

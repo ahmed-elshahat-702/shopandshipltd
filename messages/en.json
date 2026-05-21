@@ -1027,7 +1027,7 @@
     "walletAddress": "Wallet Address",
     "profitRatio": "Profit Ratio",
     "maxProducts": "Max Products",
-    "minSalesAmount": "Min Sales Amount",
+    "minWalletBalance": "Min Wallet Balance",
     "currentBadge": "Current",
     "unlockedBadge": "Unlocked",
     "lockedBadge": "Locked",

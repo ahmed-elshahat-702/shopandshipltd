@@ -49,7 +49,7 @@ CREATE TABLE profiles (
 CREATE TABLE merchant_levels (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL UNIQUE,
-  min_sales_amount DECIMAL(12, 2) DEFAULT 0,
+  min_wallet_balance DECIMAL(12, 2) DEFAULT 0,
   commission_percentage DECIMAL(5, 2) DEFAULT 15.00,
   max_products INT DEFAULT 100,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -1616,7 +1616,7 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 -- ============================================================================
 
 -- Insert merchant levels
-INSERT INTO merchant_levels (name, min_sales_amount, commission_percentage, max_products) VALUES
+INSERT INTO merchant_levels (name, min_wallet_balance, commission_percentage, max_products) VALUES
 ('L0',       0,      15.00, 20),
 ('L1',     500,   17.00, 35),
 ('L2',     5000,  20.00, 80),

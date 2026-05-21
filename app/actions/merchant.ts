@@ -858,7 +858,7 @@ export async function addProductToStoreAction(
         const { data: baseLevel } = await supabase
           .from("merchant_levels")
           .select("id")
-          .order("min_sales_amount", { ascending: true })
+          .order("min_wallet_balance", { ascending: true })
           .limit(1)
           .single();
         if (baseLevel) currentLevelId = baseLevel.id;
@@ -1433,7 +1433,7 @@ export async function submitUpgradeRequestAction(
 
     const { data: merchant, error: merchantError } = await supabase
       .from("merchant_profiles")
-      .select("id, total_sales, level_id")
+      .select("id, level_id")
       .eq("user_id", userId)
       .maybeSingle();
     if (merchantError) throw merchantError;
@@ -1444,18 +1444,26 @@ export async function submitUpgradeRequestAction(
 
     const { data: levelData, error: levelDataError } = await supabase
       .from("merchant_levels")
-      .select("min_sales_amount")
+      .select("min_wallet_balance")
       .eq("id", level)
       .maybeSingle();
     if (levelDataError) throw levelDataError;
     if (!levelData) throw new Error("Level not found");
 
-    if (
-      Number(merchant.total_sales || 0) <
-      Number(levelData.min_sales_amount || 0)
-    ) {
+    // Check wallet balance instead of total sales
+    const { data: wallet, error: walletError } = await supabase
+      .from("wallet")
+      .select("balance")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (walletError) throw walletError;
+
+    const walletBalance = Number(wallet?.balance || 0);
+    const requiredAmount = Number(levelData.min_wallet_balance || 0);
+
+    if (walletBalance < requiredAmount) {
       return {
-        error: `You need at least $${levelData.min_sales_amount} total sales to upgrade to this level.`,
+        error: `You need at least $${levelData.min_wallet_balance} in your wallet to upgrade to this level. Your current balance is $${walletBalance.toFixed(2)}.`,
       };
     }
 

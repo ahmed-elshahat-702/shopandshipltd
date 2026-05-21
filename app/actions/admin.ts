@@ -989,11 +989,11 @@ export async function approveMerchantApplicationAction(id: string) {
       "-" +
       Math.random().toString(36).substring(2, 7);
 
-    // Fetch base level (lowest min_sales_amount)
+    // Fetch base level (lowest min_wallet_balance)
     const { data: baseLevel } = await supabase
       .from("merchant_levels")
       .select("id")
-      .order("min_sales_amount", { ascending: true })
+      .order("min_wallet_balance", { ascending: true })
       .limit(1)
       .single();
 

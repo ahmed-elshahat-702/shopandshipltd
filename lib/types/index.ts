@@ -145,7 +145,7 @@ export interface MerchantLevel {
   id: number;
   name: string;
   description: string | null;
-  min_sales_amount: number;
+  min_wallet_balance: number;
   commission_percentage: number;
   max_products: number;
   features: Record<string, unknown>;
