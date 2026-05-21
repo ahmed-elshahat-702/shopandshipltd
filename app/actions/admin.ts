@@ -662,6 +662,32 @@ export async function createAdminUserAction(userData: Record<string, unknown>) {
       })
       .eq("id", auth.user.id);
 
+    // If the new user is a merchant, create a merchant_profiles row
+    if (userData.role === "merchant") {
+      const storeName = (userData.full_name as string) || (userData.email as string).split("@")[0];
+      const storeSlug =
+        storeName.toLowerCase().replace(/[^a-z0-9]+/g, "-") +
+        "-" +
+        Math.random().toString(36).substring(2, 7);
+
+      // Fetch base merchant level (lowest min_wallet_balance)
+      const { data: baseLevel } = await supabase
+        .from("merchant_levels")
+        .select("id")
+        .order("min_wallet_balance", { ascending: true })
+        .limit(1)
+        .single();
+
+      await supabase.from("merchant_profiles").insert({
+        user_id: auth.user.id,
+        business_name: storeName,
+        store_slug: storeSlug,
+        is_verified: true,
+        kyc_status: "approved",
+        level_id: baseLevel?.id || 1,
+      });
+    }
+
     return { user: auth.user };
   } catch (error) {
     console.error("Create user error:", error);
@@ -818,6 +844,49 @@ export async function updateAdminUserAction(
       profile.profile_image_url = data.profile_image_url;
     if (Object.keys(profile).length > 0)
       await supabase.from("profiles").update(profile).eq("id", userId);
+
+    // If role is being changed to merchant, ensure a merchant_profiles row exists
+    if (data.role === "merchant" && target?.role !== "merchant") {
+      const { data: existingMerchant } = await supabase
+        .from("merchant_profiles")
+        .select("id")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (!existingMerchant) {
+        // Fetch the user's name for the store
+        const { data: userProfile } = await supabase
+          .from("profiles")
+          .select("full_name, email")
+          .eq("id", userId)
+          .single();
+
+        const storeName = (data.full_name as string) || userProfile?.full_name || userProfile?.email?.split("@")[0] || "store";
+        const storeSlug =
+          storeName.toLowerCase().replace(/[^a-z0-9]+/g, "-") +
+          "-" +
+          Math.random().toString(36).substring(2, 7);
+
+        // Fetch base merchant level (lowest min_wallet_balance)
+        const { data: baseLevel } = await supabase
+          .from("merchant_levels")
+          .select("id")
+          .order("min_wallet_balance", { ascending: true })
+          .limit(1)
+          .single();
+
+        const { error: merchantError } = await supabase.from("merchant_profiles").insert({
+          user_id: userId,
+          business_name: storeName,
+          store_slug: storeSlug,
+          is_verified: true,
+          kyc_status: "approved",
+          level_id: baseLevel?.id || 1,
+        });
+        if (merchantError) throw merchantError;
+      }
+    }
+
     if (data.wallet_locked !== undefined) {
       const { error: walletError } = await supabase.from("wallet").upsert(
         {
