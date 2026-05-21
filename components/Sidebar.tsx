@@ -38,6 +38,8 @@ interface SidebarProps {
   user?: {
     fullName?: string;
     profileImageUrl?: string;
+    merchantLogoUrl?: string | null;
+    merchantBusinessName?: string | null;
   };
   isMobile?: boolean;
   onClose?: () => void;
@@ -318,7 +320,22 @@ export function Sidebar({
           {!collapsed ? (
             <Link href="/" className="flex items-center gap-3 group">
               <div className="relative">
-                {user?.profileImageUrl ? (
+                {role === "merchant" ? (
+                  user?.merchantLogoUrl ? (
+                    <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-primary/20 shadow-xl group-hover:scale-110 group-hover:border-primary/40 transition-all duration-500 relative">
+                      <Image
+                        src={user.merchantLogoUrl}
+                        alt="Merchant Logo"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-primary-foreground font-black shadow-xl shadow-primary/20 group-hover:scale-110 transition-all duration-500 text-lg">
+                      {user?.merchantBusinessName?.[0]?.toUpperCase() || "M"}
+                    </div>
+                  )
+                ) : user?.profileImageUrl ? (
                   <div className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-primary/20 shadow-xl group-hover:scale-110 group-hover:border-primary/40 transition-all duration-500 relative">
                     <Image
                       src={user.profileImageUrl}
@@ -335,7 +352,7 @@ export function Sidebar({
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="text-sm font-black text-foreground tracking-tighter leading-tight truncate">
-                  Shop & Ship LTD
+                  {role === "merchant" ? (user?.merchantBusinessName || user?.fullName || "My Store") : "Shop & Ship LTD"}
                 </span>
                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">
                   {role}
@@ -344,7 +361,20 @@ export function Sidebar({
             </Link>
           ) : (
             <div className="w-14 h-14 bg-primary/5 rounded-[1.25rem] flex items-center justify-center text-primary border-2 border-primary/10 relative hover:border-primary/30 transition-colors group">
-              {user?.profileImageUrl ? (
+              {role === "merchant" ? (
+                user?.merchantLogoUrl ? (
+                  <Image
+                    src={user.merchantLogoUrl}
+                    alt="Merchant Logo"
+                    fill
+                    className="rounded-[1.25rem] object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                ) : (
+                  <span className="text-lg font-black group-hover:scale-110 transition-transform duration-500">
+                    {user?.merchantBusinessName?.[0]?.toUpperCase() || "M"}
+                  </span>
+                )
+              ) : user?.profileImageUrl ? (
                 <Image
                   src={user.profileImageUrl}
                   alt="Logo"

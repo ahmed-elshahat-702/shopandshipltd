@@ -30,9 +30,21 @@ export const metadata: Metadata = {
     template: "%s | Shop Ship LED",
     default: "Shop Ship LED - The Complete Dropshipping Platform",
   },
-  description: "The complete platform for shopping and shipping high-quality products. Join our dropshipping network today.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
-  keywords: ["dropshipping", "ecommerce", "shopping", "shipping", "products", "B2B", "wholesale", "LED"],
+  description:
+    "The complete platform for shopping and shipping high-quality products. Join our dropshipping network today.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  ),
+  keywords: [
+    "dropshipping",
+    "ecommerce",
+    "shopping",
+    "shipping",
+    "products",
+    "B2B",
+    "wholesale",
+    "LED",
+  ],
   authors: [{ name: "Shop Ship LED Team" }],
   creator: "Shop Ship LED",
   openGraph: {
@@ -41,7 +53,8 @@ export const metadata: Metadata = {
     url: "/",
     siteName: "Shop Ship LED",
     title: "Shop Ship LED - The Complete Dropshipping Platform",
-    description: "The complete platform for shopping and shipping high-quality products. Join our dropshipping network today.",
+    description:
+      "The complete platform for shopping and shipping high-quality products. Join our dropshipping network today.",
     images: [
       {
         url: "/og-image.jpg",
@@ -54,7 +67,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Shop Ship LED - The Complete Dropshipping Platform",
-    description: "The complete platform for shopping and shipping high-quality products.",
+    description:
+      "The complete platform for shopping and shipping high-quality products.",
     images: ["/og-image.jpg"],
   },
   robots: {
@@ -98,6 +112,19 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         isActive: profile.is_active,
       }
     : null;
+
+  // Fetch merchant profile data for merchant users
+  if (user && user.role === "merchant") {
+    const { getCurrentMerchantProfile } = await import("@/utils/supabase");
+    const merchantProfile = await getCurrentMerchantProfile();
+    if (merchantProfile) {
+      (user as Record<string, unknown>).merchantId = merchantProfile.id;
+      (user as Record<string, unknown>).merchantLogoUrl =
+        merchantProfile.logo_url;
+      (user as Record<string, unknown>).merchantBusinessName =
+        merchantProfile.business_name;
+    }
+  }
 
   const messages = await getMessages();
 

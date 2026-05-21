@@ -22,6 +22,8 @@ export default function MerchantLayout({ children }: MerchantLayoutProps) {
     ? {
         fullName: user.fullName ?? undefined,
         profileImageUrl: user.profileImageUrl ?? undefined,
+        merchantLogoUrl: user.merchantLogoUrl ?? undefined,
+        merchantBusinessName: user.merchantBusinessName ?? undefined,
       }
     : undefined;
 

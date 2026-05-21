@@ -17,6 +17,8 @@ export interface SessionUser {
   isActive?: boolean;
   emailVerified?: boolean;
   merchantId?: string;
+  merchantLogoUrl?: string | null;
+  merchantBusinessName?: string | null;
 }
 
 interface UserContextValue {
@@ -111,11 +113,13 @@ export function UserProvider({
         if (newUser.role === "merchant") {
           const { data: merchantProfile } = await supabase
             .from("merchant_profiles")
-            .select("id")
+            .select("id, logo_url, business_name")
             .eq("user_id", newUser.id)
             .maybeSingle();
           if (merchantProfile) {
             newUser.merchantId = merchantProfile.id;
+            newUser.merchantLogoUrl = merchantProfile.logo_url;
+            newUser.merchantBusinessName = merchantProfile.business_name;
           }
         }
 
