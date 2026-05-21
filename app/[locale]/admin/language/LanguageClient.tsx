@@ -13,7 +13,7 @@ const LanguageClientInner = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const handleLanguageChange = (newLocale: "ar" | "en") => {
+  const handleLanguageChange = (newLocale: "ar" | "en" | "ko") => {
     const params = searchParams.toString();
     const newPathname = params ? `${pathname}?${params}` : pathname;
     router.replace(newPathname, { locale: newLocale });
@@ -39,6 +39,7 @@ const LanguageClientInner = () => {
         {([
           { code: "en", name: "English", native: "English" },
           { code: "ar", name: "العربية", native: "Arabic" },
+          { code: "ko", name: "한국어", native: "Korean" },
         ] as const).map((lang) => (
           <button
             key={lang.code}
@@ -77,7 +78,11 @@ const LanguageClientInner = () => {
 
 const LanguageClient = () => {
   return (
-    <Suspense fallback={<div className="h-40 w-full bg-muted animate-pulse rounded-[2.5rem]" />}>
+    <Suspense
+      fallback={
+        <div className="h-40 w-full bg-muted animate-pulse rounded-[2.5rem]" />
+      }
+    >
       <LanguageClientInner />
     </Suspense>
   );

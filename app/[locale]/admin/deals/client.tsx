@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useState } from "react";
 import { Deal } from "@/lib/types";
 import {
@@ -34,6 +34,7 @@ interface DealsClientProps {
 
 export default function DealsClient({ initialDeals }: DealsClientProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const [deals, setDeals] = useState<Deal[]>(initialDeals);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
@@ -104,9 +105,19 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
                 <div className="flex justify-between items-start gap-2">
                   <div className="space-y-1">
                     <CardTitle className="text-lg font-bold">
-                      {deal.title_en}
+                      {locale === "ar"
+                        ? deal.title_ar
+                        : locale === "ko"
+                        ? deal.title_ko
+                        : deal.title_en}
                     </CardTitle>
-                    <CardDescription>{deal.subtitle_en}</CardDescription>
+                    <CardDescription>
+                      {locale === "ar"
+                        ? deal.subtitle_ar
+                        : locale === "ko"
+                        ? deal.subtitle_ko
+                        : deal.subtitle_en}
+                    </CardDescription>
                   </div>
                   <div className="flex gap-1">
                     <Button
@@ -158,7 +169,13 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
                   <div className="rounded-xl overflow-hidden relative w-full h-32 bg-muted">
                     <Image
                       src={deal.image_url}
-                      alt={deal.title_en}
+                      alt={
+                        locale === "ar"
+                          ? deal.title_ar
+                          : locale === "ko"
+                          ? deal.title_ko
+                          : deal.title_en
+                      }
                       fill
                       className="w-full h-full object-cover"
                     />
@@ -168,7 +185,11 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
               <CardContent>
                 <div className="space-y-2 text-sm">
                   <p className="line-clamp-2 text-muted-foreground italic">
-                    {deal.description_en}
+                    {locale === "ar"
+                      ? deal.description_ar
+                      : locale === "ko"
+                      ? deal.description_ko
+                      : deal.description_en}
                   </p>
                   <div className="flex items-center justify-between pt-2 border-t">
                     <span className="font-mono text-[10px] bg-muted px-1.5 py-0.5 rounded">

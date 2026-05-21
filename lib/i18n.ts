@@ -20,6 +20,7 @@ export function useIsRTL() {
  * Get the opposite locale for language switching
  */
 export function getOppositeLocale(currentLocale: string): string {
+  if (currentLocale === "ko") return "en";
   return currentLocale === "ar" ? "en" : "ar";
 }
 
@@ -34,6 +35,7 @@ export function getDirection(locale: string): "rtl" | "ltr" {
  * Format locale for display
  */
 export function getLocaleLabel(locale: string): string {
+  if (locale === "ko") return "한국어";
   return locale === "ar" ? "العربية" : "English";
 }
 
@@ -41,5 +43,5 @@ export function getLocaleLabel(locale: string): string {
  * Check if locale is valid
  */
 export function isValidLocale(locale: string): boolean {
-  return ["en", "ar"].includes(locale);
+  return ["en", "ar", "ko"].includes(locale);
 }

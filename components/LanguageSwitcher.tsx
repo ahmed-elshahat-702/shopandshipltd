@@ -47,6 +47,12 @@ function LanguageSwitcherInner() {
         >
           {t("arabic")}
         </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleLanguageChange("ko")}
+          className={locale === "ko" ? "bg-accent" : ""}
+        >
+          {t("korean")}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

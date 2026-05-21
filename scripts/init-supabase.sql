@@ -363,10 +363,13 @@ CREATE TABLE deals (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title_en VARCHAR(255) NOT NULL,
   title_ar VARCHAR(255) NOT NULL,
+  title_ko VARCHAR(255) NOT NULL DEFAULT '',
   subtitle_en VARCHAR(255),
   subtitle_ar VARCHAR(255),
+  subtitle_ko VARCHAR(255),
   description_en TEXT,
   description_ar TEXT,
+  description_ko TEXT,
   image_url TEXT,
   link_url VARCHAR(255) NOT NULL,
   is_active BOOLEAN DEFAULT TRUE,
@@ -1673,14 +1676,17 @@ INSERT INTO platform_settings (setting_key, setting_value, description) VALUES
 ('telegram_number',             '+15852303334',               'Platform Telegram number');
 
 -- Insert seed deals
-INSERT INTO deals (title_en, title_ar, subtitle_en, subtitle_ar, description_en, description_ar, link_url, is_active, sort_order)
+INSERT INTO deals (title_en, title_ar, title_ko, subtitle_en, subtitle_ar, subtitle_ko, description_en, description_ar, description_ko, link_url, is_active, sort_order)
 VALUES (
   'Flash Sale — Up to 50% Off', 
   'تصفيات سريعة — خصم يصل إلى 50٪', 
+  '반짝 세일 — 최대 50% 할인', 
   'Limited Time Deals', 
   'عروض لفترة محدودة', 
+  '한정 기간 딜', 
   'On selected LED products. Today only!', 
   'على منتجات LED محددة. اليوم فقط!', 
+  '일부 선정된 LED 제품. 오늘 하루만!', 
   '/products?sort=selling', 
   true, 
   0

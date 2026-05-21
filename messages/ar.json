@@ -373,7 +373,10 @@
     "allRequests": "جميع الطلبات",
     "pendingOnly": "المعلقة فقط",
     "addTagPlaceholder": "أدخل وسماً واضغط Enter",
-    "adminWalletPlaceholder": "أدخل عنوان محفظة المسؤول"
+    "adminWalletPlaceholder": "أدخل عنوان محفظة المسؤول",
+    "titleKo": "العنوان (الكورية)",
+    "subtitleKo": "العنوان الفرعي (الكورية)",
+    "descriptionKo": "الوصف (الكورية)"
   },
   "auth": {
     "login": "دخول",
@@ -559,7 +562,8 @@
     "adjustFilters": "حاول تعديل الفلاتر",
     "orderNotFound": "الطلب غير موجود",
     "goToImage": "الانتقال إلى الصورة",
-    "errorOccurred": "حدث خطأ"
+    "errorOccurred": "حدث خطأ",
+    "korean": "الكورية"
   },
   "customer": {
     "dashboard": "لوحة التحكم",

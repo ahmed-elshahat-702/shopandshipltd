@@ -49,10 +49,13 @@ export default function DealDialog({
   const [formData, setFormData] = useState<Partial<Deal>>({
     title_en: "",
     title_ar: "",
+    title_ko: "",
     subtitle_en: "",
     subtitle_ar: "",
+    subtitle_ko: "",
     description_en: "",
     description_ar: "",
+    description_ko: "",
     image_url: null,
     link_url: "",
     is_active: true,
@@ -66,10 +69,13 @@ export default function DealDialog({
       setFormData({
         title_en: "",
         title_ar: "",
+        title_ko: "",
         subtitle_en: "",
         subtitle_ar: "",
+        subtitle_ko: "",
         description_en: "",
         description_ar: "",
+        description_ko: "",
         image_url: null,
         link_url: "",
         is_active: true,
@@ -261,7 +267,7 @@ export default function DealDialog({
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <Label
                   htmlFor="title_en"
@@ -321,9 +327,38 @@ export default function DealDialog({
                   </p>
                 )}
               </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="title_ko"
+                  className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1"
+                >
+                  {t("admin.titleKo")}
+                </Label>
+                <Input
+                  id="title_ko"
+                  value={formData.title_ko || ""}
+                  onChange={(e) => {
+                    setFormData({ ...formData, title_ko: e.target.value });
+                    if (fieldErrors.title_ko)
+                      setFieldErrors((prev) => ({
+                        ...prev,
+                        title_ko: undefined,
+                      }));
+                  }}
+                  required
+                  className={`h-12 rounded-xl border-2 font-medium focus:ring-primary/20 ${
+                    fieldErrors.title_ko ? "border-destructive" : ""
+                  }`}
+                />
+                {fieldErrors.title_ko && (
+                  <p className="text-xs text-destructive font-medium ml-1">
+                    {fieldErrors.title_ko}
+                  </p>
+                )}
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <Label
                   htmlFor="subtitle_en"
@@ -357,9 +392,25 @@ export default function DealDialog({
                   className="h-12 rounded-xl border-2 font-medium focus:ring-primary/20"
                 />
               </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="subtitle_ko"
+                  className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1"
+                >
+                  {t("admin.subtitleKo")}
+                </Label>
+                <Input
+                  id="subtitle_ko"
+                  value={formData.subtitle_ko || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, subtitle_ko: e.target.value })
+                  }
+                  className="h-12 rounded-xl border-2 font-medium focus:ring-primary/20"
+                />
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <Label
                   htmlFor="description_en"
@@ -392,6 +443,23 @@ export default function DealDialog({
                   }
                   rows={3}
                   dir="rtl"
+                  className="rounded-xl border-2 font-medium focus:ring-primary/20 resize-none"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="description_ko"
+                  className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1"
+                >
+                  {t("admin.descriptionKo")}
+                </Label>
+                <Textarea
+                  id="description_ko"
+                  value={formData.description_ko || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description_ko: e.target.value })
+                  }
+                  rows={3}
                   className="rounded-xl border-2 font-medium focus:ring-primary/20 resize-none"
                 />
               </div>

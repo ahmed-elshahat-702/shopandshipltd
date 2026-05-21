@@ -158,10 +158,13 @@ export interface Deal {
   id: string;
   title_en: string;
   title_ar: string;
+  title_ko: string;
   subtitle_en: string | null;
   subtitle_ar: string | null;
+  subtitle_ko: string | null;
   description_en: string | null;
   description_ar: string | null;
+  description_ko: string | null;
   image_url: string | null;
   link_url: string;
   is_active: boolean;

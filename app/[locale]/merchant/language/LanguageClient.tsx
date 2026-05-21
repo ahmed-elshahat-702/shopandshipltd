@@ -13,7 +13,7 @@ function LanguageClientInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const handleLanguageChange = (newLocale: "ar" | "en") => {
+  const handleLanguageChange = (newLocale: "ar" | "en" | "ko") => {
     const params = searchParams.toString();
     const newPathname = params ? `${pathname}?${params}` : pathname;
     router.replace(newPathname, { locale: newLocale });
@@ -36,12 +36,11 @@ function LanguageClientInner() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {(
-          [
-            { code: "en", name: "English", native: "English" },
-            { code: "ar", name: "العربية", native: "Arabic" },
-          ] as const
-        ).map((lang) => (
+        {([
+          { code: "en", name: "English", native: "English" },
+          { code: "ar", name: "العربية", native: "Arabic" },
+          { code: "ko", name: "한국어", native: "Korean" },
+        ] as const).map((lang) => (
           <button
             key={lang.code}
             onClick={() => handleLanguageChange(lang.code)}

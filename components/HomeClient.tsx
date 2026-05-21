@@ -189,20 +189,30 @@ export function HomeClient({
                     <div className="space-y-1 md:space-y-3 relative z-10 text-center md:text-left flex-1">
                       {(locale === "ar"
                         ? deal.subtitle_ar
+                        : locale === "ko"
+                        ? deal.subtitle_ko
                         : deal.subtitle_en) && (
                         <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest">
                           <Zap size={12} fill="currentColor" />{" "}
                           {locale === "ar"
                             ? deal.subtitle_ar
+                            : locale === "ko"
+                            ? deal.subtitle_ko
                             : deal.subtitle_en}
                         </div>
                       )}
                       <h2 className="text-2xl md:text-5xl font-black leading-tight tracking-tighter">
-                        {locale === "ar" ? deal.title_ar : deal.title_en}
+                        {locale === "ar"
+                          ? deal.title_ar
+                          : locale === "ko"
+                          ? deal.title_ko
+                          : deal.title_en}
                       </h2>
                       <p className="opacity-90 text-xs md:text-lg font-medium max-w-xl">
                         {locale === "ar"
                           ? deal.description_ar
+                          : locale === "ko"
+                          ? deal.description_ko
                           : deal.description_en}
                       </p>
                     </div>
@@ -210,7 +220,13 @@ export function HomeClient({
                       <div className="hidden md:block relative z-10 shrink-0 w-52 h-52 lg:w-64 lg:h-64 rounded-2xl overflow-hidden shadow-2xl shadow-black/30 group-hover:scale-105 transition-transform duration-500">
                         <Image
                           src={deal.image_url}
-                          alt={locale === "ar" ? deal.title_ar : deal.title_en}
+                          alt={
+                            locale === "ar"
+                              ? deal.title_ar
+                              : locale === "ko"
+                              ? deal.title_ko
+                              : deal.title_en
+                          }
                           fill
                           className="w-full h-full object-cover"
                         />
