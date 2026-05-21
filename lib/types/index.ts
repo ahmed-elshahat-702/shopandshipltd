@@ -69,6 +69,7 @@ export interface Profile {
   role: 'customer' | 'merchant' | 'admin' | 'superadmin' | string | null;
   is_active: boolean | null;
   wallet_locked?: boolean | null;
+  wallet_balance?: number;
   created_at: string;
 }
 

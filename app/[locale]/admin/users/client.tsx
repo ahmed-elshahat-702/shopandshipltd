@@ -562,6 +562,9 @@ export default function UsersClient({
                     {t("common.status")}
                   </th>
                   <th className="px-4 md:px-6 lg:px-8 py-6 text-xs font-black uppercase tracking-widest text-muted-foreground">
+                    {t("admin.walletBalance")}
+                  </th>
+                  <th className="px-4 md:px-6 lg:px-8 py-6 text-xs font-black uppercase tracking-widest text-muted-foreground">
                     {t("admin.walletStatus")}
                   </th>
                   <th className="px-4 md:px-6 lg:px-8 py-6 text-xs font-black uppercase tracking-widest text-muted-foreground">
@@ -624,6 +627,11 @@ export default function UsersClient({
                             ? t("admin.activeStatus")
                             : t("admin.inactiveStatus")}
                         </span>
+                      </div>
+                    </td>
+                    <td className="px-4 md:px-6 lg:px-8 py-6">
+                      <div className="font-black text-foreground">
+                        ${(user.wallet_balance || 0).toFixed(2)}
                       </div>
                     </td>
                     <td className="px-4 md:px-6 lg:px-8 py-6">

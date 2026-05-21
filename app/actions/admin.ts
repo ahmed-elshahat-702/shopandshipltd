@@ -548,7 +548,7 @@ export async function getAdminUsersAction(options?: {
 
     let query = supabase
       .from("profiles")
-      .select("id, email, full_name, role, is_active, created_at, wallet(is_locked)", {
+      .select("id, email, full_name, role, is_active, created_at, wallet(is_locked, balance)", {
         count: "exact",
       });
 
@@ -604,6 +604,7 @@ export async function getAdminUsersAction(options?: {
           is_active: profile.is_active,
           created_at: profile.created_at,
           wallet_locked: Boolean(wallet?.is_locked),
+          wallet_balance: Number(wallet?.balance || 0),
         };
       }) || [];
 
