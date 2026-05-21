@@ -183,6 +183,10 @@ export interface PlatformSettings {
   emailNotifications: boolean;
   maintenanceMode: boolean;
   adminWalletAddress: string;
+  supportEmail?: string;
+  supportPhone?: string;
+  whatsappNumber?: string;
+  telegramNumber?: string;
 }
 
 export interface KycRequest {

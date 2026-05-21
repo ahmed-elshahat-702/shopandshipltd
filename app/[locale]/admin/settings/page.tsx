@@ -26,6 +26,10 @@ export default async function SettingsPage() {
           emailNotifications: true,
           maintenanceMode: false,
           adminWalletAddress: "",
+          supportEmail: "support@shopandshipltd.com",
+          supportPhone: "+15852303334",
+          whatsappNumber: "+15852303334",
+          telegramNumber: "+15852303334",
         }
       : (initialSettings as PlatformSettings);
 

@@ -10,42 +10,50 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getTranslations } from "next-intl/server";
+import { getPlatformSettingsAction } from "@/app/actions/admin";
 
 export default async function SupportPage() {
   const t = await getTranslations();
+  const settingsRes = await getPlatformSettingsAction();
+  const settings = "error" in settingsRes ? null : settingsRes;
+  
+  const whatsapp = settings?.whatsappNumber || "+15852303334";
+  const telegram = settings?.telegramNumber || "+15852303334";
+  const email = settings?.supportEmail || "support@shopandshipltd.com";
+  const phone = settings?.supportPhone || "+15852303334";
 
   const contactMethods = [
     {
       icon: MessageCircle,
       title: t("merchant.contactViaWhatsapp"),
-      value: "+15852303334",
+      value: whatsapp,
       description: t("merchant.supportDescription"),
       color: "bg-green-500/10 text-green-600",
-      action: "https://wa.me/+15852303334",
+      action: `https://wa.me/${whatsapp.replace(/[^0-9+]/g, '')}`,
     },
     {
       icon: Send,
       title: t("merchant.contactViaTelegram"),
-      value: "+15852303334",
+      value: telegram,
       description: t("merchant.supportDescription"),
       color: "bg-blue-500/10 text-blue-600",
-      action: "https://t.me/+15852303334",
+      action: `https://t.me/${telegram.replace(/[^0-9+A-Za-z]/g, '')}`,
     },
     {
       icon: Mail,
       title: t("merchant.contactViaEmail"),
-      value: "support@shopandshipltd.com",
+      value: email,
       description: t("merchant.supportDescription"),
       color: "bg-red-500/10 text-red-600",
-      action: "mailto:support@shopandshipltd.com",
+      action: `mailto:${email}`,
     },
     {
       icon: Phone,
       title: t("merchant.phoneSupport"),
-      value: "+15852303334",
+      value: phone,
       description: t("merchant.supportDescription"),
       color: "bg-orange-500/10 text-orange-600",
-      action: "tel:+15852303334",
+      action: `tel:${phone.replace(/[^0-9+]/g, '')}`,
     },
   ];
 

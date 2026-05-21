@@ -88,6 +88,8 @@
     "analyticsDesc": "عرض تحليلات المنصة وقياس الأداء",
     "platformSettings": "إعدادات المنصة",
     "settingsDesc": "تكوين إعدادات المنصة والميزات",
+    "supportSettings": "الاتصال والدعم",
+    "supportSettingsDesc": "إدارة أرقام الاتصال وعناوين البريد الإلكتروني للمنصة.",
     "commissionSettings": "إعدادات العمولة",
     "platformCommission": "معدل عمولة المنصة",
     "commissionDesc": "نسبة العمولة المأخوذة في كل معاملة",

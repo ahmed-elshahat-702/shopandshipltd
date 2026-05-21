@@ -27,6 +27,7 @@ import {
   ToggleLeft,
   User,
   Wallet,
+  Headset,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -262,6 +263,11 @@ export default function SettingsClient({
                     id: "features",
                     name: t("admin.features"),
                     icon: ToggleLeft,
+                  },
+                  {
+                    id: "support",
+                    name: t("admin.supportSettings") || "Contact & Support",
+                    icon: Headset,
                   },
                 ].map((item) => (
                   <button
@@ -542,6 +548,143 @@ export default function SettingsClient({
                       </p>
                     )}
                   </div>
+                </div>
+              </section>
+            )}
+
+            {/* Contact & Support Settings */}
+            {activeTab === "support" && (
+              <section className="bg-card rounded-[2.5rem] p-8 border border-border shadow-sm space-y-8">
+                <div className="flex items-center gap-4 border-b border-border pb-6">
+                  <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
+                    <Headset size={24} />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-foreground">
+                      {t("admin.supportSettings") || "Contact & Support"}
+                    </h2>
+                    <p className="text-sm text-muted-foreground font-medium">
+                      {t("admin.supportSettingsDesc") || "Manage platform contact numbers and emails."}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">
+                      {t("settings.email")}
+                    </label>
+                    <Input
+                      value={settings.supportEmail || ""}
+                      onChange={(e) => {
+                        handleChange("supportEmail", e.target.value);
+                        if (settingsFieldErrors.supportEmail)
+                          setSettingsFieldErrors((prev) => ({
+                            ...prev,
+                            supportEmail: undefined,
+                          }));
+                      }}
+                      className={cn(
+                        "h-14 rounded-2xl border-2 font-medium",
+                        settingsFieldErrors.supportEmail
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : "",
+                      )}
+                      placeholder="support@example.com"
+                    />
+                  </div>
+                  {settingsFieldErrors.supportEmail && (
+                    <p className="text-xs text-destructive mt-1 ml-1">
+                      {settingsFieldErrors.supportEmail}
+                    </p>
+                  )}
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">
+                      {t("settings.phone")}
+                    </label>
+                    <Input
+                      value={settings.supportPhone || ""}
+                      onChange={(e) => {
+                        handleChange("supportPhone", e.target.value);
+                        if (settingsFieldErrors.supportPhone)
+                          setSettingsFieldErrors((prev) => ({
+                            ...prev,
+                            supportPhone: undefined,
+                          }));
+                      }}
+                      className={cn(
+                        "h-14 rounded-2xl border-2 font-medium",
+                        settingsFieldErrors.supportPhone
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : "",
+                      )}
+                      placeholder="+15852303334"
+                    />
+                  </div>
+                  {settingsFieldErrors.supportPhone && (
+                    <p className="text-xs text-destructive mt-1 ml-1">
+                      {settingsFieldErrors.supportPhone}
+                    </p>
+                  )}
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">
+                      {t("merchant.contactViaWhatsapp")}
+                    </label>
+                    <Input
+                      value={settings.whatsappNumber || ""}
+                      onChange={(e) => {
+                        handleChange("whatsappNumber", e.target.value);
+                        if (settingsFieldErrors.whatsappNumber)
+                          setSettingsFieldErrors((prev) => ({
+                            ...prev,
+                            whatsappNumber: undefined,
+                          }));
+                      }}
+                      className={cn(
+                        "h-14 rounded-2xl border-2 font-medium",
+                        settingsFieldErrors.whatsappNumber
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : "",
+                      )}
+                      placeholder="+15852303334"
+                    />
+                  </div>
+                  {settingsFieldErrors.whatsappNumber && (
+                    <p className="text-xs text-destructive mt-1 ml-1">
+                      {settingsFieldErrors.whatsappNumber}
+                    </p>
+                  )}
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">
+                      {t("merchant.contactViaTelegram")}
+                    </label>
+                    <Input
+                      value={settings.telegramNumber || ""}
+                      onChange={(e) => {
+                        handleChange("telegramNumber", e.target.value);
+                        if (settingsFieldErrors.telegramNumber)
+                          setSettingsFieldErrors((prev) => ({
+                            ...prev,
+                            telegramNumber: undefined,
+                          }));
+                      }}
+                      className={cn(
+                        "h-14 rounded-2xl border-2 font-medium",
+                        settingsFieldErrors.telegramNumber
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : "",
+                      )}
+                      placeholder="+15852303334"
+                    />
+                  </div>
+                  {settingsFieldErrors.telegramNumber && (
+                    <p className="text-xs text-destructive mt-1 ml-1">
+                      {settingsFieldErrors.telegramNumber}
+                    </p>
+                  )}
                 </div>
               </section>
             )}

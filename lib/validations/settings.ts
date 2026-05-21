@@ -59,6 +59,10 @@ export const platformSettingsSchema = z.object({
   platformCommission: z.number().min(0, 'Cannot be negative').max(100, 'Cannot exceed 100'),
   minWithdrawalAmount: z.number().min(0, 'Cannot be negative'),
   adminWalletAddress: z.string().optional().or(z.literal('')),
+  supportEmail: z.string().email('Invalid email address').optional().or(z.literal('')),
+  supportPhone: z.string().optional().or(z.literal('')),
+  whatsappNumber: z.string().optional().or(z.literal('')),
+  telegramNumber: z.string().optional().or(z.literal('')),
 });
 
 export type PlatformSettingsInput = z.infer<typeof platformSettingsSchema>;

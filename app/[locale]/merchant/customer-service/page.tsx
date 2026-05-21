@@ -1,6 +1,5 @@
-"use client";
-
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { getPlatformSettingsAction } from "@/app/actions/admin";
 import {
   MessageCircle,
   Mail,
@@ -10,16 +9,23 @@ import {
   PhoneCall,
 } from "lucide-react";
 
-export default function CustomerServicePage() {
-  const t = useTranslations();
+export default async function CustomerServicePage() {
+  const t = await getTranslations();
+  const settingsRes = await getPlatformSettingsAction();
+  const settings = "error" in settingsRes ? null : settingsRes;
+  
+  const whatsapp = settings?.whatsappNumber || "+15852303334";
+  const telegram = settings?.telegramNumber || "+15852303334";
+  const email = settings?.supportEmail || "support@shopandshipltd.com";
+  const phone = settings?.supportPhone || "+15852303334";
 
   const contactMethods = [
     {
       title: t("merchant.contactViaWhatsapp"),
       description: t("merchant.supportDescription"),
       icon: <MessageCircle className="text-green-500" size={32} />,
-      link: "https://wa.me/15852303334", // Placeholder
-      label: "+15852303334",
+      link: `https://wa.me/${whatsapp.replace(/[^0-9+]/g, '')}`,
+      label: whatsapp,
       color: "hover:border-green-500/50",
       bg: "bg-green-50",
     },
@@ -27,8 +33,8 @@ export default function CustomerServicePage() {
       title: t("merchant.contactViaTelegram"),
       description: t("merchant.supportDescription"),
       icon: <Send className="text-blue-500" size={32} />,
-      link: "https://t.me/+15852303334",
-      label: "+15852303334",
+      link: `https://t.me/${telegram.replace(/[^0-9+A-Za-z]/g, '')}`,
+      label: telegram,
       color: "hover:border-blue-500/50",
       bg: "bg-blue-50",
     },
@@ -36,8 +42,8 @@ export default function CustomerServicePage() {
       title: t("merchant.contactViaPhone"),
       description: t("merchant.supportDescription"),
       icon: <PhoneCall className="text-orange-500" size={32} />,
-      link: "tel:+15852303334", // Placeholder
-      label: "+15852303334",
+      link: `tel:${phone.replace(/[^0-9+]/g, '')}`,
+      label: phone,
       color: "hover:border-orange-500/50",
       bg: "bg-orange-50",
     },
@@ -45,8 +51,8 @@ export default function CustomerServicePage() {
       title: t("merchant.contactViaEmail"),
       description: t("merchant.supportDescription"),
       icon: <Mail className="text-red-500" size={32} />,
-      link: "mailto:support@shopandshipltd.com",
-      label: "support@shopandshipltd.com",
+      link: `mailto:${email}`,
+      label: email,
       color: "hover:border-red-500/50",
       bg: "bg-red-50",
     },

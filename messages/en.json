@@ -86,6 +86,8 @@
     "analyticsDesc": "View platform analytics and performance metrics",
     "platformSettings": "Platform Settings",
     "settingsDesc": "Configure platform-wide settings and features",
+    "supportSettings": "Contact & Support",
+    "supportSettingsDesc": "Manage platform contact numbers and emails.",
     "commissionSettings": "Commission Settings",
     "platformCommission": "Platform Commission Rate",
     "commissionDesc": "The percentage commission taken on each transaction",

@@ -1666,7 +1666,11 @@ INSERT INTO platform_settings (setting_key, setting_value, description) VALUES
 ('allow_customer_withdrawal',   'true',            'Whether customer withdrawals are enabled'),
 ('allow_merchant_withdrawal',   'true',            'Whether merchant withdrawals are enabled'),
 ('auto_approve_kyc',            'false',           'Automatically approve KYC submissions'),
-('maintenance_mode',            'false',           'Put platform into read-only maintenance mode');
+('maintenance_mode',            'false',           'Put platform into read-only maintenance mode'),
+('support_email',               'support@shopandshipltd.com', 'Platform support email'),
+('support_phone',               '+15852303334',               'Platform support phone'),
+('whatsapp_number',             '+15852303334',               'Platform WhatsApp number'),
+('telegram_number',             '+15852303334',               'Platform Telegram number');
 
 -- Insert seed deals
 INSERT INTO deals (title_en, title_ar, subtitle_en, subtitle_ar, description_en, description_ar, link_url, is_active, sort_order)

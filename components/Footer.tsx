@@ -1,11 +1,17 @@
-"use client";
-
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Mail, Phone, MessageCircle, Send } from "lucide-react";
+import { getPlatformSettingsAction } from "@/app/actions/admin";
 
-export function Footer() {
-  const t = useTranslations("footer");
+export async function Footer() {
+  const t = await getTranslations("footer");
+  const settingsRes = await getPlatformSettingsAction();
+  const settings = "error" in settingsRes ? null : settingsRes;
+  
+  const whatsapp = settings?.whatsappNumber || "+15852303334";
+  const telegram = settings?.telegramNumber || "+15852303334";
+  const email = settings?.supportEmail || "support@shopandshipltd.com";
+  const phone = settings?.supportPhone || "+15852303334";
 
   return (
     <footer className="bg-background border-t">
@@ -43,15 +49,15 @@ export function Footer() {
             </p>
             <div className="space-y-2 text-sm text-muted-foreground">
               <a
-                href="mailto:support@shopandshipltd.com"
+                href={`mailto:${email}`}
                 className="flex items-center gap-2 hover:text-primary transition-colors"
               >
                 <Mail className="h-4 w-4 text-primary" />
-                support@shopandshipltd.com
+                {email}
               </a>
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-primary" />
-                +15852303334
+                {phone}
               </div>
               {/* <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-primary" />
@@ -61,8 +67,8 @@ export function Footer() {
             {/* Social */}
             <div className="flex gap-3 pt-1">
               {[
-                { icon: MessageCircle, herf: "https://wa.me/+15852303334" },
-                { icon: Send, herf: "https://t.me/+15852303334" },
+                { icon: MessageCircle, herf: `https://wa.me/${whatsapp.replace(/[^0-9+]/g, '')}` },
+                { icon: Send, herf: `https://t.me/${telegram.replace(/[^0-9+A-Za-z]/g, '')}` },
               ].map((social, i) => (
                 <Link
                   target="_blank"

@@ -1423,6 +1423,10 @@ export async function getPlatformSettingsAction(): Promise<
       emailNotifications: settingsMap.email_notifications !== "false",
       maintenanceMode: settingsMap.maintenance_mode === "true",
       adminWalletAddress: settingsMap.admin_wallet_address || "",
+      supportEmail: settingsMap.support_email || "support@shopandshipltd.com",
+      supportPhone: settingsMap.support_phone || "+15852303334",
+      whatsappNumber: settingsMap.whatsapp_number || "+15852303334",
+      telegramNumber: settingsMap.telegram_number || "+15852303334",
     };
   } catch {
     return { error: "failedFetchSettings" };
