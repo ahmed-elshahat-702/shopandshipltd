@@ -34,18 +34,18 @@ export default async function SupportPage() {
     {
       icon: Mail,
       title: t("merchant.contactViaEmail"),
-      value: "support@shopshipltd.com",
+      value: "support@shopandshipltd.com",
       description: t("merchant.supportDescription"),
       color: "bg-red-500/10 text-red-600",
-      action: "mailto:support@shopshipltd.com",
+      action: "mailto:support@shopandshipltd.com",
     },
     {
       icon: Phone,
       title: t("merchant.phoneSupport"),
-      value: "+20 111 222 3333",
+      value: "+15852303334",
       description: t("merchant.supportDescription"),
       color: "bg-orange-500/10 text-orange-600",
-      action: "tel:+201112223333",
+      action: "tel:+15852303334",
     },
   ];
 

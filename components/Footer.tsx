@@ -35,22 +35,23 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-2 space-y-4">
             <h3 className="text-xl font-extrabold tracking-tight">
-              <span className="text-primary">{t("brandPart1")}</span>{t("brandPart2")}
+              <span className="text-primary">{t("brandPart1")}</span>
+              {t("brandPart2")}
             </h3>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
               {t("aboutDesc")}
             </p>
             <div className="space-y-2 text-sm text-muted-foreground">
               <a
-                href="mailto:info@shopship.com"
+                href="mailto:support@shopandshipltd.com"
                 className="flex items-center gap-2 hover:text-primary transition-colors"
               >
                 <Mail className="h-4 w-4 text-primary" />
-                info@shopship.com
+                support@shopandshipltd.com
               </a>
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-primary" />
-                +1 (585) 230-3334
+                +15852303334
               </div>
               {/* <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-primary" />
@@ -144,7 +145,10 @@ export function Footer() {
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-muted-foreground">
             <div>
               <p>
-                {t("copyrightBrand", { defaultMessage: "Shop & Ship LTD - © 2021 -" })} {t("allRightsReserved")}{" "}
+                {t("copyrightBrand", {
+                  defaultMessage: "Shop & Ship LTD - © 2021 -",
+                })}{" "}
+                {t("allRightsReserved")}{" "}
                 <span className="text-muted-foreground ">
                   {t("by", { defaultMessage: "by" })}
                   <Link
