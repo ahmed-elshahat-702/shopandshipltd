@@ -7,6 +7,7 @@ export const dealSchema = z.object({
   subtitle_ar: z.string().optional(),
   description_en: z.string().optional(),
   description_ar: z.string().optional(),
+  image_url: z.string().optional().nullable(),
   link_url: z.string().min(1, 'Link URL is required'),
   is_active: z.boolean().default(true),
   sort_order: z.preprocess(

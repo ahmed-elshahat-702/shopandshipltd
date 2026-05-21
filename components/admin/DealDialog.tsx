@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Deal } from "@/lib/types";
 import {
   Dialog,
@@ -19,10 +19,12 @@ import { Switch } from "@/components/ui/switch";
 import {
   createAdminDealAction,
   updateAdminDealAction,
+  uploadDealImageAction,
 } from "@/app/actions/admin";
 import { toast } from "sonner";
-import { Edit, Loader2, Plus } from "lucide-react";
+import { Edit, ImagePlus, Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { dealSchema, type DealInput } from "@/lib/validations/deal";
+import Image from "next/image";
 
 interface DealDialogProps {
   open: boolean;
@@ -39,6 +41,8 @@ export default function DealDialog({
 }: DealDialogProps) {
   const t = useTranslations();
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [fieldErrors, setFieldErrors] = useState<
     Partial<Record<keyof DealInput, string>>
   >({});
@@ -49,6 +53,7 @@ export default function DealDialog({
     subtitle_ar: "",
     description_en: "",
     description_ar: "",
+    image_url: null,
     link_url: "",
     is_active: true,
     sort_order: 0,
@@ -65,12 +70,47 @@ export default function DealDialog({
         subtitle_ar: "",
         description_en: "",
         description_ar: "",
+        image_url: null,
         link_url: "",
         is_active: true,
         sort_order: 0,
       });
     }
   }, [deal, open]);
+
+  const handleImageUpload = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const result = await uploadDealImageAction(fd);
+      if ("error" in result) {
+        toast.error(result.error);
+      } else if (result.url) {
+        setFormData((prev) => ({ ...prev, image_url: result.url }));
+        toast.success(t("admin.uploading").replace("...", "") + " ✓");
+      }
+    } catch {
+      toast.error("Failed to upload image");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) handleImageUpload(file);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,11 +131,12 @@ export default function DealDialog({
     setLoading(true);
 
     try {
+      const submitData = { ...result.data, image_url: formData.image_url || null };
       let resultAction;
       if (deal) {
-        resultAction = await updateAdminDealAction(deal.id, result.data);
+        resultAction = await updateAdminDealAction(deal.id, submitData);
       } else {
-        resultAction = await createAdminDealAction(result.data);
+        resultAction = await createAdminDealAction(submitData);
       }
 
       if ("error" in resultAction) {
@@ -137,6 +178,89 @@ export default function DealDialog({
 
         <div className="p-8 pt-0 max-h-[75vh] overflow-y-auto">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* ── Image Upload ── */}
+            <div className="space-y-2">
+              <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">
+                {t("admin.dealImage")}
+              </Label>
+              {formData.image_url ? (
+                <div className="relative rounded-2xl overflow-hidden border-2 border-primary/20 group">
+                  <Image
+                    src={formData.image_url}
+                    alt="Deal banner"
+                    width={800}
+                    height={300}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="rounded-xl"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Upload size={14} className="mr-1" />
+                      {t("admin.changeImage")}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="rounded-xl"
+                      onClick={() =>
+                        setFormData((prev) => ({ ...prev, image_url: null }))
+                      }
+                    >
+                      <Trash2 size={14} className="mr-1" />
+                      {t("common.remove")}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all hover:border-primary/50 hover:bg-primary/5 ${
+                    uploadingImage
+                      ? "border-primary/50 bg-primary/5"
+                      : "border-border"
+                  }`}
+                  onClick={() => !uploadingImage && fileInputRef.current?.click()}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={handleDrop}
+                >
+                  {uploadingImage ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {t("admin.uploading")}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2">
+                      <ImagePlus className="h-8 w-8 text-muted-foreground" />
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {t("admin.clickOrDrag")}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground/60">
+                        {t("admin.pngJpgWebp")}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleImageUpload(file);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label
@@ -353,7 +477,7 @@ export default function DealDialog({
               </Button>
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={loading || uploadingImage}
                 className="rounded-2xl h-12 px-8 font-black shadow-xl shadow-primary/20 hover:scale-105 transition-all"
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

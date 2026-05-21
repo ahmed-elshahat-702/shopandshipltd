@@ -235,6 +235,8 @@
     "deleteDealWarning": "لا يمكن التراجع عن هذا الإجراء وسيتم حذف هذا العرض نهائياً.",
     "showDealOnHomepage": "عرض هذا العرض على الصفحة الرئيسية",
     "linkUrlPlaceholder": "مثال: /products?category=all",
+    "dealImage": "صورة العرض",
+    "changeImage": "تغيير",
     "confirmApproveMerchant": "هل أنت متأكد أنك تريد الموافقة على هذا البائعں",
     "merchantApproved": "تمت الموافقة على البائع بنجاح",
     "merchantRejected": "تم رفض البائع بنجاح",

@@ -16,10 +16,17 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit2, Trash2, Zap } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { deleteAdminDealAction } from "@/app/actions/admin";
 import { toast } from "sonner";
 import DealDialog from "@/components/admin/DealDialog";
+import Image from "next/image";
 
 interface DealsClientProps {
   initialDeals: Deal[];
@@ -75,7 +82,10 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
           </h1>
           <p className="text-muted-foreground">{t("admin.dealsList")}</p>
         </div>
-        <Button onClick={handleAddDeal} className="h-14 px-6 rounded-2xl font-black gap-2 shadow-xl shadow-primary/20">
+        <Button
+          onClick={handleAddDeal}
+          className="h-14 px-6 rounded-2xl font-black gap-2 shadow-xl shadow-primary/20"
+        >
           <Plus size={20} />
           <span className="hidden sm:inline">{t("admin.addDeal")}</span>
         </Button>
@@ -84,7 +94,8 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {deals.length === 0 ? (
           <div className="col-span-full py-12 text-center text-muted-foreground border-2 border-dashed rounded-xl bg-muted/20">
-            {t("admin.noGlobalProducts")} {/* Reusing translation for "no data" */}
+            {t("admin.noGlobalProducts")}{" "}
+            {/* Reusing translation for "no data" */}
           </div>
         ) : (
           deals.map((deal) => (
@@ -92,7 +103,9 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start gap-2">
                   <div className="space-y-1">
-                    <CardTitle className="text-lg font-bold">{deal.title_en}</CardTitle>
+                    <CardTitle className="text-lg font-bold">
+                      {deal.title_en}
+                    </CardTitle>
                     <CardDescription>{deal.subtitle_en}</CardDescription>
                   </div>
                   <div className="flex gap-1">
@@ -116,14 +129,18 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>{t("admin.areYouSure")}</AlertDialogTitle>
+                          <AlertDialogTitle>
+                            {t("admin.areYouSure")}
+                          </AlertDialogTitle>
                           <AlertDialogDescription>
                             {t("admin.deleteDealWarning") ||
                               "This action cannot be undone and will permanently delete this deal."}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                          <AlertDialogCancel>
+                            {t("common.cancel")}
+                          </AlertDialogCancel>
                           <AlertDialogAction
                             variant="destructive"
                             onClick={() => handleDeleteDeal(deal.id)}
@@ -136,6 +153,18 @@ export default function DealsClient({ initialDeals }: DealsClientProps) {
                   </div>
                 </div>
               </CardHeader>
+              {deal.image_url && (
+                <div className="px-6 pb-3">
+                  <div className="rounded-xl overflow-hidden relative w-full h-32 bg-muted">
+                    <Image
+                      src={deal.image_url}
+                      alt={deal.title_en}
+                      fill
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
               <CardContent>
                 <div className="space-y-2 text-sm">
                   <p className="line-clamp-2 text-muted-foreground italic">

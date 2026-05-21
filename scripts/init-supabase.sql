@@ -367,6 +367,7 @@ CREATE TABLE deals (
   subtitle_ar VARCHAR(255),
   description_en TEXT,
   description_ar TEXT,
+  image_url TEXT,
   link_url VARCHAR(255) NOT NULL,
   is_active BOOLEAN DEFAULT TRUE,
   sort_order INTEGER DEFAULT 0,
@@ -1474,6 +1475,7 @@ INSERT INTO storage.buckets (id, name, public) VALUES ('product-images', 'produc
 INSERT INTO storage.buckets (id, name, public) VALUES ('kyc-documents',  'kyc-documents',  false) ON CONFLICT (id) DO NOTHING;
 INSERT INTO storage.buckets (id, name, public) VALUES ('wallet-proofs',  'wallet-proofs',  false) ON CONFLICT (id) DO NOTHING;
 INSERT INTO storage.buckets (id, name, public) VALUES ('chat-images',    'chat-images',    true)  ON CONFLICT (id) DO NOTHING;
+INSERT INTO storage.buckets (id, name, public) VALUES ('deals',          'deals',          true)  ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================================
 -- STORAGE RLS POLICIES
@@ -1595,6 +1597,24 @@ DO $$ BEGIN
     FOR INSERT WITH CHECK (bucket_id = 'chat-images' AND auth.role() = 'authenticated');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
+-- ── deals bucket ──────────────────────
+
+CREATE POLICY "Deals images are publicly accessible"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'deals');
+
+CREATE POLICY "Authenticated users can upload deal images"
+ON storage.objects FOR INSERT
+WITH CHECK (bucket_id = 'deals' AND auth.role() = 'authenticated');
+
+CREATE POLICY "Authenticated users can update deal images"
+ON storage.objects FOR UPDATE
+USING (bucket_id = 'deals' AND auth.role() = 'authenticated');
+
+CREATE POLICY "Authenticated users can delete deal images"
+ON storage.objects FOR DELETE
+USING (bucket_id = 'deals' AND auth.role() = 'authenticated');
+
 -- ============================================================================
 -- REALTIME
 -- ============================================================================
@@ -1661,6 +1681,7 @@ VALUES (
   true, 
   0
 );
+
 
 -- ============================================================================
 -- END OF INITIALIZATION SCRIPT

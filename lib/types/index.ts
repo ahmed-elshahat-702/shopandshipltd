@@ -161,6 +161,7 @@ export interface Deal {
   subtitle_ar: string | null;
   description_en: string | null;
   description_ar: string | null;
+  image_url: string | null;
   link_url: string;
   is_active: boolean;
   sort_order: number;

@@ -16,6 +16,7 @@ import "swiper/css";
 import "swiper/css/autoplay";
 import "swiper/css/free-mode";
 import "swiper/css/pagination";
+import Image from "next/image";
 
 interface HomeClientProps {
   initialNewProducts: {
@@ -168,8 +169,24 @@ export function HomeClient({
               activeDeals.map((deal) => (
                 <SwiperSlide key={deal.id}>
                   <div className="bg-linear-to-r from-primary to-primary/80 px-6 py-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 text-primary-foreground overflow-hidden relative group min-h-55 md:min-h-75">
-                    <div className="absolute right-0 top-0 w-96 h-full bg-white/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-700" />
-                    <div className="space-y-1 md:space-y-3 relative z-10 text-center md:text-left">
+                    {deal.image_url ? (
+                      <>
+                        {/* Background image for mobile, side image for desktop */}
+                        <div
+                          className="absolute inset-0 md:hidden"
+                          style={{
+                            backgroundImage: `url(${deal.image_url})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                          }}
+                        >
+                          <div className="absolute inset-0 bg-linear-to-t from-primary via-primary/80 to-primary/40" />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="absolute right-0 top-0 w-96 h-full bg-white/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-700" />
+                    )}
+                    <div className="space-y-1 md:space-y-3 relative z-10 text-center md:text-left flex-1">
                       {(locale === "ar"
                         ? deal.subtitle_ar
                         : deal.subtitle_en) && (
@@ -189,6 +206,16 @@ export function HomeClient({
                           : deal.description_en}
                       </p>
                     </div>
+                    {deal.image_url && (
+                      <div className="hidden md:block relative z-10 shrink-0 w-52 h-52 lg:w-64 lg:h-64 rounded-2xl overflow-hidden shadow-2xl shadow-black/30 group-hover:scale-105 transition-transform duration-500">
+                        <Image
+                          src={deal.image_url}
+                          alt={locale === "ar" ? deal.title_ar : deal.title_en}
+                          fill
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
                     <Link
                       href={deal.link_url}
                       className="relative z-10 shrink-0 inline-flex items-center gap-3 bg-white text-primary px-8 py-3 md:px-12 md:py-4 rounded-2xl font-black text-sm md:text-lg hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-black/20"

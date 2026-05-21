@@ -1493,6 +1493,27 @@ export async function deleteAdminDealAction(id: string) {
   }
 }
 
+export async function uploadDealImageAction(formData: FormData) {
+  try {
+    const supabase = await createClient();
+    const file = formData.get("file") as File;
+    if (!file) return { error: "noFileProvided" };
+    const ext = file.name.split(".").pop() ?? "jpg";
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const { error } = await supabase.storage
+      .from("deals")
+      .upload(path, buffer, { contentType: file.type });
+    if (error) throw error;
+    const url = supabase.storage
+      .from("deals")
+      .getPublicUrl(path).data.publicUrl;
+    return { url };
+  } catch {
+    return { error: "failedUploadDealImage" };
+  }
+}
+
 // ─── UPGRADES ─────────────────────────────────────────────────────────────────
 
 export async function getUpgradeRequestsAction() {

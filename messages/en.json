@@ -234,6 +234,8 @@
     "deleteDealWarning": "This action cannot be undone and will permanently delete this deal.",
     "showDealOnHomepage": "Show this deal on the homepage",
     "linkUrlPlaceholder": "e.g. /products?category=all",
+    "dealImage": "Deal Image",
+    "changeImage": "Change",
     "confirmApproveMerchant": "Are you sure you want to approve this merchant?",
     "merchantApproved": "Merchant approved successfully",
     "merchantRejected": "Merchant rejected successfully",
