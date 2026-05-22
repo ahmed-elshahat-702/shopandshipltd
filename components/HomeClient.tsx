@@ -17,6 +17,7 @@ import "swiper/css/autoplay";
 import "swiper/css/free-mode";
 import "swiper/css/pagination";
 import Image from "next/image";
+import DealsBanner from "./home/deals-banner";
 
 interface HomeClientProps {
   initialNewProducts: {
@@ -155,95 +156,7 @@ export function HomeClient({
       </div>
 
       {/* ─── Flash Deals Banner ─── */}
-      <section className="py-4 md:py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <Swiper
-            modules={[Autoplay, Pagination]}
-            autoplay={{ delay: 5000, disableOnInteraction: false }}
-            pagination={{ clickable: true }}
-            spaceBetween={20}
-            slidesPerView={1}
-            className="rounded-[2rem] overflow-hidden"
-          >
-            {activeDeals.length > 0 &&
-              activeDeals.map((deal) => (
-                <SwiperSlide key={deal.id}>
-                  <div className="bg-linear-to-r from-primary to-primary/80 px-6 py-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 text-primary-foreground overflow-hidden relative group min-h-55 md:min-h-75">
-                    {deal.image_url ? (
-                      <>
-                        {/* Background image for mobile, side image for desktop */}
-                        <div
-                          className="absolute inset-0 md:hidden"
-                          style={{
-                            backgroundImage: `url(${deal.image_url})`,
-                            backgroundSize: "cover",
-                            backgroundPosition: "center",
-                          }}
-                        >
-                          <div className="absolute inset-0 bg-linear-to-t from-primary via-primary/80 to-primary/40" />
-                        </div>
-                      </>
-                    ) : (
-                      <div className="absolute right-0 top-0 w-96 h-full bg-white/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-700" />
-                    )}
-                    <div className="space-y-1 md:space-y-3 relative z-10 text-center md:text-left flex-1">
-                      {(locale === "ar"
-                        ? deal.subtitle_ar
-                        : locale === "ko"
-                        ? deal.subtitle_ko
-                        : deal.subtitle_en) && (
-                        <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] md:text-xs font-black uppercase tracking-widest">
-                          <Zap size={12} fill="currentColor" />{" "}
-                          {locale === "ar"
-                            ? deal.subtitle_ar
-                            : locale === "ko"
-                            ? deal.subtitle_ko
-                            : deal.subtitle_en}
-                        </div>
-                      )}
-                      <h2 className="text-2xl md:text-5xl font-black leading-tight tracking-tighter">
-                        {locale === "ar"
-                          ? deal.title_ar
-                          : locale === "ko"
-                          ? deal.title_ko
-                          : deal.title_en}
-                      </h2>
-                      <p className="opacity-90 text-xs md:text-lg font-medium max-w-xl">
-                        {locale === "ar"
-                          ? deal.description_ar
-                          : locale === "ko"
-                          ? deal.description_ko
-                          : deal.description_en}
-                      </p>
-                    </div>
-                    {deal.image_url && (
-                      <div className="hidden md:block relative z-10 shrink-0 w-52 h-52 lg:w-64 lg:h-64 rounded-2xl overflow-hidden shadow-2xl shadow-black/30 group-hover:scale-105 transition-transform duration-500">
-                        <Image
-                          src={deal.image_url}
-                          alt={
-                            locale === "ar"
-                              ? deal.title_ar
-                              : locale === "ko"
-                              ? deal.title_ko
-                              : deal.title_en
-                          }
-                          fill
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                    <Link
-                      href={deal.link_url}
-                      className="relative z-10 shrink-0 inline-flex items-center gap-3 bg-white text-primary px-8 py-3 md:px-12 md:py-4 rounded-2xl font-black text-sm md:text-lg hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-black/20"
-                    >
-                      {t("home.shopNow")} <ArrowRight size={20} />
-                    </Link>
-                  </div>
-                </SwiperSlide>
-              ))}
-          </Swiper>
-        </div>
-      </section>
+      <DealsBanner initialDeals={initialDeals} />
 
       {/* ─── New Arrivals ─── */}
       <section className="py-8">
