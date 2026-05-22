@@ -225,7 +225,6 @@ export async function placeOrderAction(data: {
   tax: number;
   total: number;
   paymentMethod: "wallet" | "cod";
-  codFee: number;
   saveAddress?: boolean;
 }) {
   try {
@@ -315,9 +314,8 @@ export async function placeOrderAction(data: {
       const ratio = data.subtotal > 0 ? merchantSubtotal / data.subtotal : 1;
 
       const pTax = Number((data.tax * ratio).toFixed(2));
-      const pCodFee = Number((data.codFee * ratio).toFixed(2));
       const merchantTotal = Number(
-        (merchantSubtotal + pTax + pCodFee).toFixed(2),
+        (merchantSubtotal + pTax).toFixed(2),
       );
 
       // NEW SYSTEM: Merchant pays admin price upon order confirmation.
@@ -347,7 +345,6 @@ export async function placeOrderAction(data: {
           total_amount: merchantTotal,
           subtotal_amount: merchantSubtotal,
           tax_amount: pTax,
-          cod_fee: pCodFee,
           commission_amount: commissionAmount,
           profit_amount: profitAmount,
           status: "pending",

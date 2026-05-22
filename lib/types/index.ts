@@ -319,7 +319,6 @@ export type MerchantOrderDetails = {
   delivered_at: string | null;
   total_amount: number;
   tax_amount: number;
-  cod_fee: number;
   commission_amount: number;
   profit_amount: number;
   tracking_number: string | null;

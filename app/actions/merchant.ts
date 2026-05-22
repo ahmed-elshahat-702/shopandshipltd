@@ -681,7 +681,7 @@ export async function getOrderDetailsForMerchantAction(
       .from("orders")
       .select(
         `
-        id, order_number, created_at, updated_at, delivered_at, total_amount, tax_amount, cod_fee, commission_amount, profit_amount, tracking_number, notes, status, shipping_address,
+        id, order_number, created_at, updated_at, delivered_at, total_amount, tax_amount, commission_amount, profit_amount, tracking_number, notes, status, shipping_address,
         order_items(id, product_id, quantity, price_per_unit, subtotal, product_name, product_sku, product_image_url, variant_id, variant_details, products(id, name, image_url, sku))
       `,
       )

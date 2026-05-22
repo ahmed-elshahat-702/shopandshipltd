@@ -26,8 +26,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Address } from "@/lib/types";
 
-const COD_FEE = 5.0;
-
 export default function CheckoutClient() {
   const t = useTranslations();
   const { items, clearCart } = useCartStore();
@@ -64,8 +62,7 @@ export default function CheckoutClient() {
     0,
   );
   const tax = subtotal * 0.1;
-  const currentCodFee = paymentMethod === "cod" ? COD_FEE : 0;
-  const total = subtotal + tax + currentCodFee;
+  const total = subtotal + tax;
 
   useEffect(() => {
     async function fetchData() {
@@ -149,7 +146,6 @@ export default function CheckoutClient() {
         tax,
         total,
         paymentMethod,
-        codFee: currentCodFee,
         saveAddress: showNewAddressForm && saveAddress,
       });
 
@@ -688,13 +684,6 @@ export default function CheckoutClient() {
                   <span>{t("order.tax")}</span>
                   <span>${tax.toFixed(2)}</span>
                 </div>
-
-                {paymentMethod === "cod" && (
-                  <div className="flex justify-between text-orange-400 font-bold bg-orange-400/10 px-3 py-2 rounded-lg">
-                    <span>{t("order.codFee") || "COD Fee"}</span>
-                    <span>+${COD_FEE.toFixed(2)}</span>
-                  </div>
-                )}
 
                 <div className="pt-6 border-t border-white/10 mt-6 flex justify-between items-center">
                   <span className="text-lg font-black text-white">

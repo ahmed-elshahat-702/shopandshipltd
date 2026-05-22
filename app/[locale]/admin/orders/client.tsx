@@ -85,7 +85,6 @@ interface Order {
   total_amount: number;
   subtotal_amount: number;
   tax_amount: number;
-  cod_fee: number;
   commission_amount: number;
   profit_amount: number;
   created_at: string;
@@ -598,12 +597,6 @@ export default function OrdersClient({ initialOrders }: OrdersClientProps) {
                         <span className="text-muted-foreground">{t("order.tax")}</span>
                         <span className="font-bold">
                           ${Number(order.tax_amount || 0).toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">{t("order.codFee")}</span>
-                        <span className="font-bold">
-                          ${Number(order.cod_fee || 0).toLocaleString()}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm border-t border-border pt-3">

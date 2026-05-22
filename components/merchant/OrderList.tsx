@@ -283,8 +283,8 @@ export function OrderList({ merchantId }: OrderListProps) {
               {isWalletLocked
                 ? t("wallet.lockedByAdmin")
                 : t("merchant.commissionAlert", {
-                    amount: orderBeingAccepted?.commission_amount || 0,
-                  })}
+                  amount: orderBeingAccepted?.commission_amount || 0,
+                })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -367,15 +367,6 @@ export function OrderList({ merchantId }: OrderListProps) {
                     </p>
                     <p className="mt-2 text-2xl font-black">
                       ${Number(selectedOrder.tax_amount || 0).toLocaleString()}
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-border bg-muted/20 p-4">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                      COD Fee
-                    </p>
-                    <p className="mt-2 text-2xl font-black">
-                      ${Number(selectedOrder.cod_fee || 0).toLocaleString()}
                     </p>
                   </div>
                 </div>

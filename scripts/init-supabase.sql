@@ -228,7 +228,6 @@ CREATE TABLE orders (
   subtotal_amount DECIMAL(12, 2) DEFAULT 0,
   total_amount DECIMAL(12, 2) NOT NULL,
   tax_amount DECIMAL(12, 2) DEFAULT 0,
-  cod_fee DECIMAL(12, 2) DEFAULT 0,
   commission_amount DECIMAL(12, 2) DEFAULT 0,
   profit_amount DECIMAL(12, 2) DEFAULT 0,
   tracking_number VARCHAR(100),
