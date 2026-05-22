@@ -26,9 +26,8 @@ export default function CartClient() {
     (sum, item) => sum + item.variant_price * item.quantity,
     0,
   );
-  const shipping = subtotal > 100 ? 0 : 10;
   const tax = subtotal * 0.1;
-  const total = subtotal + shipping + tax;
+  const total = subtotal + tax;
 
   // Group items by merchant name, falling back to ID for older cart entries.
   const itemsByMerchant = items.reduce(
@@ -255,21 +254,6 @@ export default function CartClient() {
                 </div>
 
                 <div className="flex justify-between text-muted-foreground font-medium">
-                  <span>{t("order.shipping")}</span>
-                  <span
-                    className={
-                      shipping === 0
-                        ? "text-green-500 font-bold"
-                        : "text-foreground font-bold"
-                    }
-                  >
-                    {shipping === 0
-                      ? t("common.free")
-                      : `$${shipping.toFixed(2)}`}
-                  </span>
-                </div>
-
-                <div className="flex justify-between text-muted-foreground font-medium">
                   <span>{t("order.tax")}</span>
                   <span className="text-foreground font-bold">
                     ${tax.toFixed(2)}
@@ -286,11 +270,6 @@ export default function CartClient() {
                     ${total.toFixed(2)}
                   </span>
                 </div>
-                {shipping === 0 && (
-                  <p className="text-xs text-green-500 font-bold mt-2 text-right">
-                    ✓ {t("cart.freeShippingQualified")}
-                  </p>
-                )}
               </div>
 
               <div className="space-y-3 pt-2">

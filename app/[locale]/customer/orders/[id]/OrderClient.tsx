@@ -76,7 +76,6 @@ export default function OrderClient() {
     total_amount: number;
     subtotal_amount: number;
     tax_amount: number;
-    shipping_cost: number;
     cod_fee: number;
     tracking_number: string | null;
     shipping_address: {
@@ -273,14 +272,7 @@ export default function OrderClient() {
                   <span>{t("order.tax")}</span>
                   <span>${Number(order.tax_amount || 0).toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between font-bold text-muted-foreground">
-                  <span>{t("order.shipping")}</span>
-                  <span className={order.shipping_cost === 0 ? "text-green-600" : ""}>
-                    {Number(order.shipping_cost) === 0
-                      ? t("common.free")
-                      : `$${Number(order.shipping_cost).toFixed(2)}`}
-                  </span>
-                </div>
+
                 {order.cod_fee > 0 && (
                   <div className="flex justify-between font-bold text-orange-600">
                     <span>{t("order.codFee") || "COD Fee"}</span>

@@ -369,17 +369,7 @@ export function OrderList({ merchantId }: OrderListProps) {
                       ${Number(selectedOrder.tax_amount || 0).toLocaleString()}
                     </p>
                   </div>
-                  <div className="rounded-2xl border border-border bg-muted/20 p-4">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                      {t("order.shipping")}
-                    </p>
-                    <p className="mt-2 text-2xl font-black">
-                      $
-                      {Number(
-                        selectedOrder.shipping_cost || 0,
-                      ).toLocaleString()}
-                    </p>
-                  </div>
+
                   <div className="rounded-2xl border border-border bg-muted/20 p-4">
                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                       COD Fee

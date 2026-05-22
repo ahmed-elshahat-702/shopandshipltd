@@ -222,7 +222,6 @@ export async function placeOrderAction(data: {
     country: string;
   };
   subtotal: number;
-  shippingCost: number;
   tax: number;
   total: number;
   paymentMethod: "wallet" | "cod";
@@ -239,7 +238,7 @@ export async function placeOrderAction(data: {
     // 1. Handle Wallet Payment
     if (data.paymentMethod === "wallet") {
       const adminSupabase = createAdminClient();
-      
+
       const { error: rpcError } = await adminSupabase.rpc("process_customer_checkout", {
         customer_user_id: user.id,
         total_amount: data.total,
@@ -312,26 +311,25 @@ export async function placeOrderAction(data: {
         ),
       );
 
-      // Pro-rate shipping, tax and COD fee if multiple merchants
+      // Pro-rate tax and COD fee if multiple merchants
       const ratio = data.subtotal > 0 ? merchantSubtotal / data.subtotal : 1;
 
-      const pShipping = Number((data.shippingCost * ratio).toFixed(2));
       const pTax = Number((data.tax * ratio).toFixed(2));
       const pCodFee = Number((data.codFee * ratio).toFixed(2));
       const merchantTotal = Number(
-        (merchantSubtotal + pShipping + pTax + pCodFee).toFixed(2),
+        (merchantSubtotal + pTax + pCodFee).toFixed(2),
       );
 
       // NEW SYSTEM: Merchant pays admin price upon order confirmation.
       // commission_amount will store the total cost to merchant (admin price * qty)
       // profit_amount will be customer price - admin price
-      
+
       // Calculate total cost for this order (to be paid by merchant later)
       const { data: itemProducts } = await supabase
         .from("products")
         .select("id, price, name, sku, image_url")
         .in("id", merchantItems.map(i => i.product_id));
-      
+
       const adminCostTotal = merchantItems.reduce((sum, item) => {
         const p = itemProducts?.find(ip => ip.id === item.product_id);
         return sum + (Number(p?.price || 0) * item.quantity);
@@ -348,7 +346,6 @@ export async function placeOrderAction(data: {
           order_number: `ORD-${Math.random().toString(36).toUpperCase().substring(2, 10)}`,
           total_amount: merchantTotal,
           subtotal_amount: merchantSubtotal,
-          shipping_cost: pShipping,
           tax_amount: pTax,
           cod_fee: pCodFee,
           commission_amount: commissionAmount,
@@ -384,14 +381,14 @@ export async function placeOrderAction(data: {
 
           const nextVariants = item.variant_id
             ? (currentStock?.variants as ProductVariantRecord[] | null | undefined)?.map(
-                (variant) =>
-                  variant.id === item.variant_id
-                    ? {
-                        ...variant,
-                        stock: Math.max(0, Number(variant.stock || 0) - item.quantity),
-                      }
-                    : variant,
-              )
+              (variant) =>
+                variant.id === item.variant_id
+                  ? {
+                    ...variant,
+                    stock: Math.max(0, Number(variant.stock || 0) - item.quantity),
+                  }
+                  : variant,
+            )
             : undefined;
 
           await adminSupabase

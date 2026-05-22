@@ -22,9 +22,8 @@ export default function CartSummary({
     0
   );
 
-  const shipping = subtotal > 100 ? 0 : 10; // Free shipping over $100
   const tax = subtotal * 0.1; // 10% tax
-  const total = subtotal + shipping + tax;
+  const total = subtotal + tax;
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 sticky top-4 h-fit">
@@ -37,20 +36,9 @@ export default function CartSummary({
         </div>
 
         <div className="flex justify-between text-gray-700">
-          <span>{t('order.shipping')}</span>
-          <span>{shipping === 0 ? t('common.free') : `$${shipping.toFixed(2)}`}</span>
-        </div>
-
-        <div className="flex justify-between text-gray-700">
           <span>{t('order.tax')}</span>
           <span>${tax.toFixed(2)}</span>
         </div>
-
-        {shipping === 0 && (
-          <div className="text-sm text-green-600 font-semibold">
-            ✓ {t('cart.freeShippingQualified')}
-          </div>
-        )}
       </div>
 
       <div className="border-t-2 border-gray-200 pt-4 mb-6">

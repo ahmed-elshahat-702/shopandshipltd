@@ -131,7 +131,6 @@ export type MerchantOrderDetails = {
   delivered_at: string | null;
   total_amount: number;
   tax_amount: number;
-  shipping_cost: number;
   commission_amount: number;
   profit_amount: number;
   tracking_number: string | null;
@@ -682,7 +681,7 @@ export async function getOrderDetailsForMerchantAction(
       .from("orders")
       .select(
         `
-        id, order_number, created_at, updated_at, delivered_at, total_amount, tax_amount, shipping_cost, cod_fee, commission_amount, profit_amount, tracking_number, notes, status, shipping_address,
+        id, order_number, created_at, updated_at, delivered_at, total_amount, tax_amount, cod_fee, commission_amount, profit_amount, tracking_number, notes, status, shipping_address,
         order_items(id, product_id, quantity, price_per_unit, subtotal, product_name, product_sku, product_image_url, variant_id, variant_details, products(id, name, image_url, sku))
       `,
       )
@@ -701,7 +700,6 @@ export async function getOrderDetailsForMerchantAction(
       delivered_at: data.delivered_at,
       total_amount: Number(data.total_amount || 0),
       tax_amount: Number(data.tax_amount || 0),
-      shipping_cost: Number(data.shipping_cost || 0),
       commission_amount: Number(data.commission_amount || 0),
       profit_amount: Number(data.profit_amount || 0),
       tracking_number: data.tracking_number,

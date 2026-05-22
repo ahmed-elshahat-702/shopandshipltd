@@ -63,10 +63,9 @@ export default function CheckoutClient() {
     (sum, item) => sum + item.variant_price * item.quantity,
     0,
   );
-  const shipping = subtotal > 100 ? 0 : 10;
   const tax = subtotal * 0.1;
   const currentCodFee = paymentMethod === "cod" ? COD_FEE : 0;
-  const total = subtotal + shipping + tax + currentCodFee;
+  const total = subtotal + tax + currentCodFee;
 
   useEffect(() => {
     async function fetchData() {
@@ -147,7 +146,6 @@ export default function CheckoutClient() {
         })),
         shipping: formData,
         subtotal,
-        shippingCost: shipping,
         tax,
         total,
         paymentMethod,
@@ -685,14 +683,7 @@ export default function CheckoutClient() {
                   <span>{t("order.subtotal")}</span>
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-white/60 font-medium">
-                  <span>{t("order.shipping")}</span>
-                  <span className={shipping === 0 ? "text-green-400" : ""}>
-                    {shipping === 0
-                      ? t("common.free")
-                      : `$${shipping.toFixed(2)}`}
-                  </span>
-                </div>
+
                 <div className="flex justify-between text-white/60 font-medium">
                   <span>{t("order.tax")}</span>
                   <span>${tax.toFixed(2)}</span>
