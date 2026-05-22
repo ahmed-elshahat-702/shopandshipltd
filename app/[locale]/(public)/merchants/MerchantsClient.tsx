@@ -322,21 +322,21 @@ export default function MerchantsClient({
 
               {/* Enhanced Pagination */}
               {totalPages > 1 && (
-                <div className="flex justify-center items-center gap-3 py-10">
+                <div className="flex justify-center items-center gap-1.5 sm:gap-3 py-10">
                   <Button
                     variant="outline"
                     size="icon"
-                    className="rounded-2xl h-14 w-14 border-2 hover:bg-primary/5 hover:text-primary transition-all disabled:opacity-30"
+                    className="rounded-xl sm:rounded-2xl h-10 w-10 sm:h-14 sm:w-14 border-2 hover:bg-primary/5 hover:text-primary transition-all disabled:opacity-30 flex items-center justify-center shrink-0"
                     disabled={page === 1}
                     onClick={() => {
                       setPage((p) => p - 1);
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
                   >
-                    <ChevronLeft size={24} strokeWidth={2.5} />
+                    <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.5} />
                   </Button>
 
-                  <div className="flex items-center gap-2 bg-white p-2 rounded-[2rem] shadow-lg border-2 border-gray-50">
+                  <div className="flex items-center gap-1 sm:gap-2 bg-white p-1 sm:p-2 rounded-xl sm:rounded-[2rem] shadow-lg border-2 border-gray-50 shrink-0">
                     {[...Array(totalPages)].map((_, i) => {
                       const pageNum = i + 1;
                       // Logic to show only a few pages around the current one
@@ -350,7 +350,7 @@ export default function MerchantsClient({
                           return (
                             <span
                               key={pageNum}
-                              className="px-2 text-gray-300 font-bold"
+                              className="px-1.5 text-gray-300 font-bold text-sm sm:text-base"
                             >
                               •••
                             </span>
@@ -363,11 +363,10 @@ export default function MerchantsClient({
                         <Button
                           key={pageNum}
                           variant={page === pageNum ? "default" : "ghost"}
-                          className={`h-12 w-12 rounded-2xl font-black text-base transition-all ${
-                            page === pageNum
+                          className={`h-9 w-9 sm:h-12 sm:w-12 rounded-lg sm:rounded-2xl font-black text-xs sm:text-base transition-all ${page === pageNum
                               ? "shadow-lg shadow-primary/20 scale-110"
                               : "text-gray-400 hover:text-primary hover:bg-primary/5"
-                          }`}
+                            }`}
                           onClick={() => {
                             setPage(pageNum);
                             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -382,14 +381,14 @@ export default function MerchantsClient({
                   <Button
                     variant="outline"
                     size="icon"
-                    className="rounded-2xl h-14 w-14 border-2 hover:bg-primary/5 hover:text-primary transition-all disabled:opacity-30"
+                    className="rounded-xl sm:rounded-2xl h-10 w-10 sm:h-14 sm:w-14 border-2 hover:bg-primary/5 hover:text-primary transition-all disabled:opacity-30 flex items-center justify-center shrink-0"
                     disabled={page === totalPages}
                     onClick={() => {
                       setPage((p) => p + 1);
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }}
                   >
-                    <ChevronRight size={24} strokeWidth={2.5} />
+                    <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.5} />
                   </Button>
                 </div>
               )}

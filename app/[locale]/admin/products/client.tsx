@@ -748,42 +748,68 @@ export default function ProductsClient({
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="bg-card border-2 border-border p-8 rounded-[2.5rem] flex items-center justify-between shadow-xl shadow-primary/5">
+          <div className="bg-card border-2 border-border p-3 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] flex items-center justify-between shadow-xl shadow-primary/5 gap-1 sm:gap-6">
             <Button
               variant="outline"
               onClick={() => setPage(page - 1)}
               disabled={page === 1}
-              className="rounded-2xl h-14 px-8 font-black gap-3 border-2 hover:bg-primary/5 hover:border-primary/50 transition-all disabled:opacity-30"
+              className="rounded-lg sm:rounded-2xl h-9 sm:h-14 w-9 sm:w-auto px-0 sm:px-8 font-black gap-2 sm:gap-3 border-2 hover:bg-primary/5 hover:border-primary/50 transition-all disabled:opacity-30 flex items-center justify-center shrink-0"
             >
-              <ArrowLeft size={20} strokeWidth={2.5} />
-              {t("common.previous")}
+              <ArrowLeft size={16} className="sm:w-5 sm:h-5" strokeWidth={2.5} />
+              <span className="hidden sm:inline">{t("common.previous")}</span>
             </Button>
 
-            <div className="flex gap-3">
-              {Array.from({ length: Math.min(totalPages, 7) }).map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setPage(i + 1)}
-                  className={cn(
-                    "w-12 h-12 rounded-xl font-black text-sm transition-all",
-                    page === i + 1
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-110"
-                      : "bg-muted text-muted-foreground hover:bg-border",
-                  )}
-                >
-                  {i + 1}
-                </button>
-              ))}
+            <div className="flex items-center gap-1 sm:gap-3">
+              {Array.from({ length: totalPages }).map((_, idx) => {
+                const pageNum = idx + 1;
+                const isFirstPage = pageNum === 1;
+                const isLastPage = pageNum === totalPages;
+                const isCurrentPage = page === pageNum;
+                const isNearCurrent = Math.abs(pageNum - page) <= 1;
+
+                if (isFirstPage || isLastPage || isNearCurrent) {
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setPage(pageNum)}
+                      className={cn(
+                        "w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl font-black text-xs sm:text-sm transition-all shrink-0 cursor-pointer",
+                        isCurrentPage
+                          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-110"
+                          : "bg-muted text-muted-foreground hover:bg-border"
+                      )}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                }
+
+                if (
+                  (pageNum === 2 && page > 3) ||
+                  (pageNum === totalPages - 1 && page < totalPages - 2)
+                ) {
+                  return (
+                    <span
+                      key={pageNum}
+                      className="px-1 text-muted-foreground font-black opacity-50 text-xs sm:text-sm shrink-0"
+                    >
+                      ···
+                    </span>
+                  );
+                }
+
+                return null;
+              })}
             </div>
 
             <Button
               variant="outline"
               onClick={() => setPage(page + 1)}
               disabled={page === totalPages}
-              className="rounded-2xl h-14 px-8 font-black gap-3 border-2 hover:bg-primary/5 hover:border-primary/50 transition-all disabled:opacity-30"
+              className="rounded-lg sm:rounded-2xl h-9 sm:h-14 w-9 sm:w-auto px-0 sm:px-8 font-black gap-2 sm:gap-3 border-2 hover:bg-primary/5 hover:border-primary/50 transition-all disabled:opacity-30 flex items-center justify-center shrink-0"
             >
-              {t("common.next")}
-              <ArrowRight size={20} strokeWidth={2.5} />
+              <span className="hidden sm:inline">{t("common.next")}</span>
+              <ArrowRight size={16} className="sm:w-5 sm:h-5" strokeWidth={2.5} />
             </Button>
           </div>
         )}
