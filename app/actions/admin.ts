@@ -12,6 +12,7 @@ import {
 } from "@/lib/types";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin-client";
+import { createNotification } from "./notifications";
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
@@ -898,7 +899,41 @@ export async function updateAdminUserAction(
         { onConflict: "user_id" },
       );
       if (walletError) throw walletError;
+
+      // Notify user about wallet lock/unlock
+      createNotification({
+        user_id: userId,
+        type: data.wallet_locked ? "wallet_locked" : "wallet_unlocked",
+        title: data.wallet_locked ? "Wallet Locked" : "Wallet Unlocked",
+        message: data.wallet_locked
+          ? "Your wallet has been locked by an administrator."
+          : "Your wallet has been unlocked by an administrator.",
+      });
     }
+
+    // Notify user about account status changes
+    if (data.is_active !== undefined) {
+      createNotification({
+        user_id: userId,
+        type: data.is_active ? "account_activated" : "account_deactivated",
+        title: data.is_active ? "Account Activated" : "Account Deactivated",
+        message: data.is_active
+          ? "Your account has been reactivated by an administrator."
+          : "Your account has been deactivated by an administrator.",
+      });
+    }
+
+    // Notify user about role change
+    if (data.role !== undefined && data.role !== target?.role) {
+      createNotification({
+        user_id: userId,
+        type: "role_changed",
+        title: "Role Updated",
+        message: `Your account role has been changed to ${data.role}.`,
+        metadata: { old_role: target?.role, new_role: data.role },
+      });
+    }
+
     return { success: true };
   } catch (error) {
     return {
@@ -1102,6 +1137,15 @@ export async function approveMerchantApplicationAction(id: string) {
       .update({ status: "approved" })
       .eq("id", id);
 
+    // Notify user about merchant application approval
+    createNotification({
+      user_id: app.user_id,
+      type: "merchant_app_approved",
+      title: "Application Approved!",
+      message: "Your merchant application has been approved. You can now set up your store!",
+      metadata: { application_id: id },
+    });
+
     return { success: true };
   } catch (error: unknown) {
     const message =
@@ -1117,12 +1161,32 @@ export async function rejectMerchantApplicationAction(
 ) {
   try {
     const supabase = createAdminClient();
+
+    // Get the application to know the user_id
+    const { data: app } = await supabase
+      .from("merchant_applications")
+      .select("user_id")
+      .eq("id", id)
+      .single();
+
     const { error } = await supabase
       .from("merchant_applications")
       .update({ status: "rejected", rejection_reason: reason })
       .eq("id", id);
 
     if (error) throw error;
+
+    // Notify user about rejection
+    if (app?.user_id) {
+      createNotification({
+        user_id: app.user_id,
+        type: "merchant_app_rejected",
+        title: "Application Rejected",
+        message: `Your merchant application was rejected. Reason: ${reason}`,
+        metadata: { application_id: id, reason },
+      });
+    }
+
     return { success: true };
   } catch {
     return { error: "failedRejectMerchant" };
@@ -1342,6 +1406,13 @@ export async function approveWithdrawalAction(requestId: string) {
       : request.wallet;
     if (wallet?.is_locked) return { error: "Wallet is locked by admin." };
 
+    // Get transaction details for notification
+    const { data: txDetail } = await adminSupabase
+      .from("wallet_transactions")
+      .select("type, amount, wallet(user_id)")
+      .eq("id", requestId)
+      .single();
+
     const { error } = await adminSupabase
       .from("wallet_transactions")
       .update({
@@ -1352,6 +1423,21 @@ export async function approveWithdrawalAction(requestId: string) {
       .eq("id", requestId);
 
     if (error) throw error;
+
+    // Notify user
+    const txWallet = Array.isArray(txDetail?.wallet) ? txDetail.wallet[0] : txDetail?.wallet;
+    if (txWallet?.user_id) {
+      const txType = txDetail?.type;
+      const txAmount = Math.abs(Number(txDetail?.amount || 0));
+      createNotification({
+        user_id: txWallet.user_id,
+        type: txType === "recharge" ? "wallet_recharge_approved" : "wallet_withdrawal_approved",
+        title: txType === "recharge" ? "Recharge Approved" : "Withdrawal Approved",
+        message: `Your ${txType} request of $${txAmount.toFixed(2)} has been approved.`,
+        metadata: { transaction_id: requestId, amount: txAmount },
+      });
+    }
+
     return { success: true };
   } catch (error) {
     console.error("Approve withdrawal error:", error);
@@ -1374,6 +1460,14 @@ export async function rejectWithdrawalAction(
     if (!isAdmin) return { error: "unauthorized" };
 
     const adminSupabase = createAdminClient();
+
+    // Get transaction details for notification
+    const { data: txDetail } = await adminSupabase
+      .from("wallet_transactions")
+      .select("type, amount, wallet(user_id)")
+      .eq("id", requestId)
+      .single();
+
     const { error } = await adminSupabase
       .from("wallet_transactions")
       .update({
@@ -1385,6 +1479,21 @@ export async function rejectWithdrawalAction(
       .eq("id", requestId);
 
     if (error) throw error;
+
+    // Notify user
+    const txWallet = Array.isArray(txDetail?.wallet) ? txDetail.wallet[0] : txDetail?.wallet;
+    if (txWallet?.user_id) {
+      const txType = txDetail?.type;
+      const txAmount = Math.abs(Number(txDetail?.amount || 0));
+      createNotification({
+        user_id: txWallet.user_id,
+        type: txType === "recharge" ? "wallet_recharge_rejected" : "wallet_withdrawal_rejected",
+        title: txType === "recharge" ? "Recharge Rejected" : "Withdrawal Rejected",
+        message: `Your ${txType} request of $${txAmount.toFixed(2)} was rejected. Reason: ${reason}`,
+        metadata: { transaction_id: requestId, amount: txAmount, reason },
+      });
+    }
+
     return { success: true };
   } catch (error) {
     console.error("Reject withdrawal error:", error);
@@ -1625,6 +1734,14 @@ export async function respondToUpgradeRequestAction(
 ) {
   try {
     const supabase = createAdminClient();
+
+    // Get the upgrade request to find the user_id
+    const { data: upgradeReq } = await supabase
+      .from("merchant_level_upgrades")
+      .select("user_id")
+      .eq("id", requestId)
+      .single();
+
     await supabase
       .from("merchant_level_upgrades")
       .update({
@@ -1639,6 +1756,20 @@ export async function respondToUpgradeRequestAction(
         .from("merchant_profiles")
         .update({ level_id: newLevel })
         .eq("id", merchantId);
+
+    // Notify the merchant
+    if (upgradeReq?.user_id) {
+      createNotification({
+        user_id: upgradeReq.user_id,
+        type: status === "approved" ? "upgrade_approved" : "upgrade_rejected",
+        title: status === "approved" ? "Upgrade Approved!" : "Upgrade Rejected",
+        message: status === "approved"
+          ? `Your upgrade request to level ${newLevel} has been approved!`
+          : `Your upgrade request was rejected.${reason ? ` Reason: ${reason}` : ""}`,
+        metadata: { request_id: requestId, new_level: newLevel, reason },
+      });
+    }
+
     return { success: true };
   } catch {
     return { error: "failedProcessUpgrade" };
@@ -1895,13 +2026,13 @@ export async function adminUpdateOrderStatusAction(
           console.error("Failed to release order commission via RPC:", rpcError);
         }
         
-        // Notify merchant
-        await supabase.from("notifications").insert({
+        // Notify merchant about delivery earnings
+        createNotification({
           user_id: merchantUserId,
-          title: "Order Delivered",
-          message: `Order #${order.order_number} has been delivered. Your commission of $${adminCost.toFixed(2)} and profit of $${profit.toFixed(2)} have been added to your wallet.`,
-          type: "order_delivered",
-          read: false,
+          type: "order_delivered_earnings",
+          title: "Order Delivered — Earnings Credited",
+          message: `Order #${order.order_number} has been delivered. Your profit of $${profit.toFixed(2)} has been credited to your wallet.`,
+          metadata: { order_id: orderId, order_number: order.order_number, profit, commission: adminCost },
         });
       }
     }
@@ -1980,6 +2111,67 @@ export async function adminUpdateOrderStatusAction(
       .eq("id", orderId);
 
     if (error) throw error;
+
+    // ── Send notifications for admin order status changes ──
+    const orderNum = order.order_number || orderId.slice(0, 8);
+    const customerId = order.user_id;
+    const merchantUserId2 = order.merchant_profiles?.user_id;
+
+    if (oldStatus === "pending" && status === "processing") {
+      createNotification({
+        user_id: customerId,
+        type: "order_confirmed",
+        title: "Order Confirmed",
+        message: `Your order #${orderNum} has been confirmed by admin.`,
+        metadata: { order_id: orderId, order_number: orderNum },
+      });
+    }
+    if (status === "shipped" && oldStatus !== "shipped") {
+      createNotification({
+        user_id: customerId,
+        type: "order_shipped",
+        title: "Order Shipped",
+        message: `Your order #${orderNum} has been shipped.${trackingNumber ? ` Tracking: ${trackingNumber}` : ""}`,
+        metadata: { order_id: orderId, order_number: orderNum, tracking_number: trackingNumber },
+      });
+    }
+    if (status === "delivered" && oldStatus !== "delivered") {
+      createNotification({
+        user_id: customerId,
+        type: "order_delivered",
+        title: "Order Delivered",
+        message: `Your order #${orderNum} has been delivered.`,
+        metadata: { order_id: orderId, order_number: orderNum },
+      });
+    }
+    if (status === "cancelled" && oldStatus !== "cancelled") {
+      createNotification({
+        user_id: customerId,
+        type: "order_cancelled",
+        title: "Order Cancelled",
+        message: `Order #${orderNum} has been cancelled by admin.`,
+        metadata: { order_id: orderId, order_number: orderNum },
+      });
+      if (order.payment_method === "wallet") {
+        createNotification({
+          user_id: customerId,
+          type: "order_refunded",
+          title: "Refund Issued",
+          message: `$${Number(order.total_amount).toFixed(2)} has been refunded for order #${orderNum}.`,
+          metadata: { order_id: orderId, order_number: orderNum, amount: Number(order.total_amount) },
+        });
+      }
+      if (merchantUserId2 && (oldStatus === "processing" || oldStatus === "shipped")) {
+        createNotification({
+          user_id: merchantUserId2,
+          type: "commission_released",
+          title: "Funds Released",
+          message: `Reserved funds for order #${orderNum} have been returned to your wallet.`,
+          metadata: { order_id: orderId, order_number: orderNum },
+        });
+      }
+    }
+
     return { success: true };
   } catch (error) {
     console.error("[admin_order_status_put] Error:", error);
@@ -2030,6 +2222,15 @@ export async function adminRechargeWalletAction(
       });
 
     if (txError) throw txError;
+
+    // Notify user about admin recharge
+    createNotification({
+      user_id: userId,
+      type: "wallet_admin_recharge",
+      title: "Wallet Recharged",
+      message: `An administrator has added $${Math.abs(amount).toFixed(2)} to your wallet.${description ? ` Note: ${description}` : ""}`,
+      metadata: { amount: Math.abs(amount), description },
+    });
 
     return { success: true };
   } catch (error) {

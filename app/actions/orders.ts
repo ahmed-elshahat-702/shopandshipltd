@@ -6,6 +6,7 @@ import crypto from "crypto";
 
 import { createAdminClient } from "@/utils/supabase/admin-client";
 import { Address } from "@/lib/types";
+import { createNotification } from "./notifications";
 
 type ProductVariantRecord = {
   id?: string;
@@ -420,6 +421,23 @@ export async function placeOrderAction(data: {
 
       if (itemsError) throw itemsError;
       orderResults.push(order);
+
+      // Notify merchant about new order
+      const { data: merchantProfile } = await supabase
+        .from("merchant_profiles")
+        .select("user_id")
+        .eq("id", merchantId)
+        .single();
+
+      if (merchantProfile?.user_id) {
+        createNotification({
+          user_id: merchantProfile.user_id,
+          type: "order_placed",
+          title: "New Order Received",
+          message: `New order #${order.order_number} worth $${merchantTotal.toFixed(2)} has been placed.`,
+          metadata: { order_id: order.id, order_number: order.order_number, amount: merchantTotal },
+        });
+      }
     }
 
     return { success: true, orders: orderResults };

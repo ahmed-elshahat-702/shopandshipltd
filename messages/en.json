@@ -1588,5 +1588,27 @@
     "sec3Content": "We use essential cookies for platform functionality, analytical cookies to understand usage, and marketing cookies to provide relevant offers.",
     "sec4Title": "4. Managing Cookies",
     "sec4Content": "You can control and manage cookies through your browser settings. Please note that removing or blocking cookies may impact your experience on our platform."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "No notifications",
+    "noNotificationsDesc": "You're all caught up! New notifications will appear here.",
+    "notificationsCount": "notifications",
+    "markAllRead": "Mark all read",
+    "clearAll": "Clear all",
+    "delete": "Delete",
+    "viewAll": "View all notifications",
+    "filters": {
+      "all": "All",
+      "unread": "Unread",
+      "orders": "Orders",
+      "wallet": "Wallet",
+      "reviews": "Reviews",
+      "upgrades": "Upgrades",
+      "followers": "Followers",
+      "system": "System",
+      "applications": "Applications",
+      "account": "Account"
+    }
   }
 }

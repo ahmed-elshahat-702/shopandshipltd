@@ -467,3 +467,29 @@ export interface Address {
   country: string;
   type?: "shipping" | "wallet";
 }
+
+// ─── NOTIFICATIONS ──────────────────────────────────────────────────────────
+
+export type NotificationType =
+  | 'order_placed' | 'order_confirmed' | 'order_shipped'
+  | 'order_delivered' | 'order_delivered_earnings' | 'order_cancelled' | 'order_refunded'
+  | 'wallet_recharge_requested' | 'wallet_recharge_approved' | 'wallet_recharge_rejected'
+  | 'wallet_withdrawal_requested' | 'wallet_withdrawal_approved' | 'wallet_withdrawal_rejected'
+  | 'wallet_admin_recharge' | 'wallet_locked' | 'wallet_unlocked'
+  | 'commission_held' | 'commission_released'
+  | 'merchant_app_submitted' | 'merchant_app_approved' | 'merchant_app_rejected'
+  | 'upgrade_requested' | 'upgrade_approved' | 'upgrade_rejected'
+  | 'new_review'
+  | 'account_deactivated' | 'account_activated' | 'role_changed' | 'new_follower'
+  | 'system_announcement' | 'low_stock_alert';
+
+export interface AppNotification {
+  id: string;
+  user_id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  is_read: boolean;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}

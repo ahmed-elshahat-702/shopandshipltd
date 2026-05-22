@@ -20,6 +20,46 @@ CREATE TYPE wallet_transaction_type AS ENUM ('recharge', 'withdrawal', 'order_pa
 CREATE TYPE wallet_transaction_status AS ENUM ('pending', 'completed', 'failed', 'cancelled');
 CREATE TYPE review_rating AS ENUM ('1', '2', '3', '4', '5');
 CREATE TYPE discount_type AS ENUM ('percentage', 'fixed_amount');
+CREATE TYPE notification_type AS ENUM (
+  -- Order lifecycle
+  'order_placed',
+  'order_confirmed',
+  'order_shipped',
+  'order_delivered',
+  'order_delivered_earnings',
+  'order_cancelled',
+  'order_refunded',
+  -- Wallet / Financial
+  'wallet_recharge_requested',
+  'wallet_recharge_approved',
+  'wallet_recharge_rejected',
+  'wallet_withdrawal_requested',
+  'wallet_withdrawal_approved',
+  'wallet_withdrawal_rejected',
+  'wallet_admin_recharge',
+  'wallet_locked',
+  'wallet_unlocked',
+  'commission_held',
+  'commission_released',
+  -- Merchant Application
+  'merchant_app_submitted',
+  'merchant_app_approved',
+  'merchant_app_rejected',
+  -- Merchant Level Upgrade
+  'upgrade_requested',
+  'upgrade_approved',
+  'upgrade_rejected',
+  -- Reviews
+  'new_review',
+  -- Account
+  'account_deactivated',
+  'account_activated',
+  'role_changed',
+  'new_follower',
+  -- System / Admin
+  'system_announcement',
+  'low_stock_alert'
+);
 
 -- ============================================================================
 -- TABLE: PROFILES (User accounts and roles)
@@ -117,6 +157,21 @@ CREATE TABLE messages (
   content TEXT,
   image_url TEXT,
   is_read BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================================================
+-- TABLE: NOTIFICATIONS
+-- ============================================================================
+
+CREATE TABLE notifications (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  type notification_type NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  is_read BOOLEAN DEFAULT FALSE,
+  metadata JSONB DEFAULT '{}'::jsonb,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -483,6 +538,12 @@ CREATE INDEX idx_merchant_level_upgrades_status ON merchant_level_upgrades(statu
 CREATE INDEX IF NOT EXISTS idx_chat_participants_user_id ON chat_participants(user_id);
 CREATE INDEX IF NOT EXISTS idx_messages_chat_id ON messages(chat_id);
 CREATE INDEX IF NOT EXISTS idx_messages_sender_id ON messages(sender_id);
+
+-- Notifications Indexes
+CREATE INDEX idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX idx_notifications_user_unread ON notifications(user_id, is_read)
+  WHERE is_read = FALSE;
+CREATE INDEX idx_notifications_created_at ON notifications(created_at DESC);
 
 -- ============================================================================
 -- TRIGGERS FOR AUTOMATIC MANAGEMENT
@@ -1009,6 +1070,8 @@ ALTER TABLE merchant_followers       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chats                   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chat_participants       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE messages                ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+
 
 -- ============================================================================
 -- RLS POLICIES
@@ -1121,6 +1184,20 @@ DO $$ BEGIN
   CREATE POLICY "messages_update" ON messages
     FOR UPDATE USING ( is_chat_participant(chat_id) );
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- ── NOTIFICATIONS ─────────────────────────────────
+
+CREATE POLICY "notifications_select_own" ON notifications
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "notifications_update_own" ON notifications
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "notifications_insert_service" ON notifications
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "notifications_delete_own" ON notifications
+  FOR DELETE USING (auth.uid() = user_id);
 
 -- ── MERCHANT_LEVELS ─────────────────────────────────────────────────────────
 
@@ -1630,6 +1707,8 @@ DO $$ BEGIN
   ALTER PUBLICATION supabase_realtime ADD TABLE messages;
   ALTER PUBLICATION supabase_realtime ADD TABLE chats;
   ALTER PUBLICATION supabase_realtime ADD TABLE chat_participants;
+  -- Notifications table
+  ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ============================================================================

@@ -3,6 +3,7 @@
 import { logoutAction } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import { useUnreadChatCount } from "@/hooks/useUnreadChatCount";
+import { useNotifications } from "@/hooks/useNotifications";
 import {
   Sheet,
   SheetContent,
@@ -16,6 +17,8 @@ import { useCartStore } from "@/lib/store/useCartStore";
 import { useWishlistStore } from "@/lib/store/useWishlistStore";
 import { AnimatePresence, motion } from "framer-motion"; // Add Framer Motion
 import {
+  ArrowLeft,
+  Bell,
   ChevronRight,
   Headset,
   Heart,
@@ -41,6 +44,7 @@ export function MobileBottomNav() {
   const cartCount = useCartStore((state) => state.getItemCount());
   const wishlistCount = useWishlistStore((state) => state.getItemCount());
   const unreadChatCount = useUnreadChatCount();
+  const { unreadCount: unreadNotifCount } = useNotifications();
   const { user, loading } = useUser();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
@@ -191,6 +195,13 @@ export function MobileBottomNav() {
                   href: "/support",
                   icon: Headset,
                   label: t("nav.customerService"),
+                },
+                {
+                  href: "/customer/notifications",
+                  icon: Bell,
+                  label: t("notifications.title"),
+                  badge: unreadNotifCount,
+                  auth: true,
                 },
                 {
                   href: "/customer/messages",

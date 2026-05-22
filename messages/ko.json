@@ -1588,5 +1588,27 @@
     "sec3Content": "플랫폼 보안과 핵심 기능 구동에 없어서는 안 될 필수적 쿠키(Essential Cookies), 이용 트래픽과 성능을 분석 및 모니터링하기 위한 분석형 쿠키(Analytical Cookies), 그리고 개인 취향에 알맞은 맞춤 상품 혜택을 매칭해 드리는 광고 마케팅 쿠키를 복합적으로 가동하고 있습니다.",
     "sec4Title": "4. 쿠키 설정 및 거부 관리",
     "sec4Content": "이용자는 브라우저의 옵션 환경설정 메뉴를 통해 쿠키 저장을 직접 승인하거나 전부 혹은 부분 거부 및 일괄 자동 삭제되도록 조정할 수 있습니다. 단, 필수적 쿠키 수집을 전면 차단하실 경우 당사 플랫폼의 장바구니, 로그인 등 일부 유기적 상거래 서비스의 사용성에 제약이 따를 수 있습니다."
+  },
+  "notifications": {
+    "title": "알림",
+    "noNotifications": "알림이 없습니다",
+    "noNotificationsDesc": "모든 내용을 확인하셨습니다! 새 알림이 여기에 표시됩니다.",
+    "notificationsCount": "개의 알림",
+    "markAllRead": "모두 읽음 처리",
+    "clearAll": "전체 삭제",
+    "delete": "삭제",
+    "viewAll": "전체 알림 보기",
+    "filters": {
+      "all": "전체",
+      "unread": "읽지 않음",
+      "orders": "주문",
+      "wallet": "지갑",
+      "reviews": "리뷰",
+      "upgrades": "등급",
+      "followers": "팔로워",
+      "system": "시스템",
+      "applications": "신청",
+      "account": "계정"
+    }
   }
 }

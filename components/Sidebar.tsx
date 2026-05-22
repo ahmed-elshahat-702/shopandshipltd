@@ -3,10 +3,12 @@ import { logoutAction } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/hooks/use-auth";
 import { useUnreadChatCount } from "@/hooks/useUnreadChatCount";
+import { useNotifications } from "@/hooks/useNotifications";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import {
   BarChart3,
+  Bell,
   ChevronLeft,
   ChevronRight,
   Globe,
@@ -55,6 +57,7 @@ export function Sidebar({
   const locale = useLocale();
   const { loading: authLoading } = useUser();
   const unreadChatCount = useUnreadChatCount();
+  const { unreadCount: unreadNotifCount } = useNotifications();
   const isRtl = locale === "ar";
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(true);
@@ -116,6 +119,12 @@ export function Sidebar({
         icon: MessageSquare,
         href: "/merchant/messages",
         badge: unreadChatCount,
+      },
+      {
+        label: t("notifications.title") || "Notifications",
+        icon: Bell,
+        href: "/merchant/notifications",
+        badge: unreadNotifCount,
       },
       {
         label: t("merchant.customerService") || "Customer Service",
@@ -200,6 +209,12 @@ export function Sidebar({
         icon: Settings,
         href: "/admin/settings",
       },
+      {
+        label: t("notifications.title") || "Notifications",
+        icon: Bell,
+        href: "/admin/notifications",
+        badge: unreadNotifCount,
+      },
     ],
     superadmin: [
       {
@@ -267,6 +282,12 @@ export function Sidebar({
         label: t("admin.settings") || "Settings",
         icon: Settings,
         href: "/admin/settings",
+      },
+      {
+        label: t("notifications.title") || "Notifications",
+        icon: Bell,
+        href: "/admin/notifications",
+        badge: unreadNotifCount,
       },
     ],
     customer: [],

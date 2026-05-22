@@ -6,6 +6,7 @@ import {
   saveSearchAction,
 } from "@/app/actions/search";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { NotificationBell } from "@/components/NotificationBell";
 import { Button } from "@/components/ui/button";
 import { useUnreadChatCount } from "@/hooks/useUnreadChatCount";
 import {
@@ -456,6 +457,10 @@ export function Navbar() {
               {/* Right Actions — desktop only */}
               <div className="hidden md:flex items-center gap-1 shrink-0">
                 <LanguageSwitcher />
+
+              {user && (
+                  <NotificationBell />
+                )}
 
                 {user && (
                   <Link href="/customer/messages">

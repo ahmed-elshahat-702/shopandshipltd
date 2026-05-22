@@ -7,6 +7,7 @@ import {
   getPlatformSettingsAction,
   approveMerchantApplicationAction,
 } from "./admin";
+import { createNotification, notifyAdmins } from "./notifications";
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 
@@ -1251,6 +1252,28 @@ export async function toggleFollowMerchantAction(merchantId: string) {
         user_id: user.id,
       });
       if (error) throw error;
+
+      // Notify merchant about new follower
+      const { data: merchantData } = await supabase
+        .from("merchant_profiles")
+        .select("user_id, business_name")
+        .eq("id", merchantId)
+        .single();
+      const { data: followerProfile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+      if (merchantData?.user_id) {
+        createNotification({
+          user_id: merchantData.user_id,
+          type: "new_follower",
+          title: "New Follower",
+          message: `${followerProfile?.full_name || "Someone"} started following your store.`,
+          metadata: { follower_id: user.id, merchant_id: merchantId },
+        });
+      }
+
       return { success: true, isFollowing: true };
     }
   } catch (error: unknown) {
@@ -1396,6 +1419,19 @@ export async function submitMerchantApplicationAction(formData: FormData) {
       return { success: true, application: updatedApp ?? initialApp };
     }
 
+    // Notify admins about new merchant application
+    const { data: applicantProfile } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", user.id)
+      .single();
+    notifyAdmins(
+      "merchant_app_submitted",
+      "New Merchant Application",
+      `${applicantProfile?.full_name || "A user"} submitted a merchant application for "${storeName}".`,
+      { application_id: initialApp?.id, user_id: user.id, store_name: storeName }
+    );
+
     return { success: true, application: initialApp };
   } catch (error: unknown) {
     const message =
@@ -1478,6 +1514,15 @@ export async function submitUpgradeRequestAction(
       .single();
 
     if (requestError) throw requestError;
+
+    // Notify admins about upgrade request
+    notifyAdmins(
+      "upgrade_requested",
+      "Merchant Upgrade Request",
+      `A merchant has requested upgrade to level ${level}.`,
+      { request_id: request?.id, user_id: userId, requested_level: level }
+    );
+
     return { success: true, request };
   } catch (error: unknown) {
     const message =
@@ -1924,6 +1969,14 @@ export async function submitWalletTransactionAction(formData: FormData) {
       }
     }
 
+    // Notify admins about wallet transaction request
+    notifyAdmins(
+      type === "recharge" ? "wallet_recharge_requested" : "wallet_withdrawal_requested",
+      type === "recharge" ? "Wallet Recharge Request" : "Wallet Withdrawal Request",
+      `A user submitted a ${type} request for $${Math.abs(amount).toFixed(2)}.`,
+      { transaction_id: transaction?.id, user_id: userId, amount: Math.abs(amount), type }
+    );
+
     return { success: true, transaction };
   } catch (error: unknown) {
     const message =
@@ -2076,6 +2129,84 @@ export async function updateOrderStatusAction(
       .eq("id", orderId);
 
     if (updateError) throw updateError;
+
+    // ── Send notifications based on status transition ──
+    const customerId = order.user_id;
+    const orderNum = order.order_number || orderId.slice(0, 8);
+
+    if (oldStatus === "pending" && newStatus === "processing") {
+      const adminCostHeld = Number(order.commission_amount || 0);
+      createNotification({
+        user_id: customerId,
+        type: "order_confirmed",
+        title: "Order Confirmed",
+        message: `Your order #${orderNum} has been confirmed and is being processed.`,
+        metadata: { order_id: orderId, order_number: orderNum },
+      });
+      createNotification({
+        user_id: merchant.user_id,
+        type: "commission_held",
+        title: "Commission Reserved",
+        message: `$${adminCostHeld.toFixed(2)} has been reserved from your wallet for order #${orderNum}.`,
+        metadata: { order_id: orderId, order_number: orderNum, amount: adminCostHeld },
+      });
+    }
+
+    if (newStatus === "shipped") {
+      createNotification({
+        user_id: customerId,
+        type: "order_shipped",
+        title: "Order Shipped",
+        message: `Your order #${orderNum} has been shipped.${trackingNumber ? ` Tracking: ${trackingNumber}` : ""}`,
+        metadata: { order_id: orderId, order_number: orderNum, tracking_number: trackingNumber },
+      });
+    }
+
+    if (newStatus === "delivered" && oldStatus !== "delivered") {
+      const profit = Number(order.profit_amount || 0);
+      createNotification({
+        user_id: customerId,
+        type: "order_delivered",
+        title: "Order Delivered",
+        message: `Your order #${orderNum} has been delivered. Enjoy your purchase!`,
+        metadata: { order_id: orderId, order_number: orderNum },
+      });
+      createNotification({
+        user_id: merchant.user_id,
+        type: "order_delivered_earnings",
+        title: "Earnings Credited",
+        message: `Order #${orderNum} delivered. Your profit of $${profit.toFixed(2)} has been credited.`,
+        metadata: { order_id: orderId, order_number: orderNum, profit },
+      });
+    }
+
+    if (newStatus === "cancelled" && oldStatus !== "cancelled") {
+      createNotification({
+        user_id: customerId,
+        type: "order_cancelled",
+        title: "Order Cancelled",
+        message: `Order #${orderNum} has been cancelled.`,
+        metadata: { order_id: orderId, order_number: orderNum },
+      });
+      if (order.payment_method === "wallet") {
+        createNotification({
+          user_id: customerId,
+          type: "order_refunded",
+          title: "Refund Issued",
+          message: `$${Number(order.total_amount).toFixed(2)} has been refunded to your wallet for order #${orderNum}.`,
+          metadata: { order_id: orderId, order_number: orderNum, amount: Number(order.total_amount) },
+        });
+      }
+      if (oldStatus === "processing" || oldStatus === "shipped") {
+        createNotification({
+          user_id: merchant.user_id,
+          type: "commission_released",
+          title: "Funds Released",
+          message: `Reserved funds for order #${orderNum} have been returned to your wallet.`,
+          metadata: { order_id: orderId, order_number: orderNum },
+        });
+      }
+    }
 
     return { success: true };
   } catch (error: unknown) {

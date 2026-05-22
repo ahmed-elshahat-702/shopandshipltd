@@ -9,6 +9,7 @@ import {
   ProductVariant,
 } from "@/lib/types";
 import { createClient } from "@/utils/supabase/server";
+import { createNotification } from "./notifications";
 
 export interface HomeMerchant {
   id: string;
@@ -622,6 +623,29 @@ export async function submitProductReviewAction(data: {
       .single();
 
     if (error) throw error;
+
+    // Notify merchants selling this product
+    const { data: merchantVariants } = await supabase
+      .from("merchant_products")
+      .select("merchant_id, merchant_profiles(user_id)")
+      .eq("product_id", data.productId);
+
+    if (merchantVariants) {
+      const notifiedUserIds = new Set<string>();
+      for (const mv of merchantVariants) {
+        const mp = mv.merchant_profiles as unknown as { user_id: string } | null;
+        if (mp?.user_id && !notifiedUserIds.has(mp.user_id)) {
+          notifiedUserIds.add(mp.user_id);
+          createNotification({
+            user_id: mp.user_id,
+            type: "new_review",
+            title: "New Product Review",
+            message: `A customer left a ${data.rating}-star review on one of your products.`,
+            metadata: { product_id: data.productId, rating: data.rating, review_id: review?.id },
+          });
+        }
+      }
+    }
 
     return { success: true, review };
   } catch (error: unknown) {
