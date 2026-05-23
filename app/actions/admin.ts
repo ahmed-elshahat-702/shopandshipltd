@@ -1608,6 +1608,26 @@ export async function updatePlatformSettingsAction(
         setting_key: "admin_wallet_address",
         setting_value: String(settingsData.adminWalletAddress),
       });
+    if (settingsData.supportEmail !== undefined)
+      toUpsert.push({
+        setting_key: "support_email",
+        setting_value: String(settingsData.supportEmail),
+      });
+    if (settingsData.supportPhone !== undefined)
+      toUpsert.push({
+        setting_key: "support_phone",
+        setting_value: String(settingsData.supportPhone),
+      });
+    if (settingsData.whatsappNumber !== undefined)
+      toUpsert.push({
+        setting_key: "whatsapp_number",
+        setting_value: String(settingsData.whatsappNumber),
+      });
+    if (settingsData.telegramNumber !== undefined)
+      toUpsert.push({
+        setting_key: "telegram_number",
+        setting_value: String(settingsData.telegramNumber),
+      });
 
     if (toUpsert.length > 0)
       await supabase
