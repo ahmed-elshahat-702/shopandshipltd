@@ -12,6 +12,8 @@ import useSWR from "swr";
 import { useState } from "react";
 import { motion, Variants } from "framer-motion";
 
+import type { Swiper as SwiperType } from "swiper";
+
 // Framer Motion variants for staggered child animations
 const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -41,7 +43,7 @@ export default function DealsBanner({ initialDeals }: { initialDeals: Deal[] }) 
     const t = useTranslations();
     const locale = useLocale();
     const [activeIndex, setActiveIndex] = useState(0);
-    const [swiperInstance, setSwiperInstance] = useState<any>(null);
+    const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
 
     const { data: dealsData } = useSWR(
         "active-deals",
@@ -57,7 +59,7 @@ export default function DealsBanner({ initialDeals }: { initialDeals: Deal[] }) 
 
     const getLocalizedField = (obj: Deal, fieldBase: string) => {
         if (!obj) return '';
-        const record = obj as Record<string, any>;
+        const record = obj as unknown as Record<string, string | null>;
         return record[`${fieldBase}_${locale}`] || record[`${fieldBase}_en`] || '';
     };
 
@@ -72,7 +74,7 @@ export default function DealsBanner({ initialDeals }: { initialDeals: Deal[] }) 
                         autoplay={{ delay: 6000, disableOnInteraction: false }}
                         spaceBetween={24}
                         slidesPerView={1}
-                        onSwiper={setSwiperInstance}
+                        _swiper={setSwiperInstance}
                         onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
                         className="rounded-3xl md:rounded-[2.5rem] overflow-hidden shadow-2xl"
                     >
@@ -87,7 +89,7 @@ export default function DealsBanner({ initialDeals }: { initialDeals: Deal[] }) 
                                     {deal.image_url ? (
                                         <Link
                                             href={deal.link_url || '#'}
-                                            className="relative block w-full overflow-hidden aspect-[16/6] group/image"
+                                            className="relative block w-full overflow-hidden aspect-16/6 group/image"
                                         >
                                             <Image
                                                 src={deal.image_url}
@@ -99,17 +101,17 @@ export default function DealsBanner({ initialDeals }: { initialDeals: Deal[] }) 
                                             />
                                         </Link>
                                     ) : (
-                                        <div className="relative w-full overflow-hidden bg-gradient-to-br from-slate-900 via-slate-950 to-neutral-900 text-white aspect-[16/6] p-4 sm:p-6 md:p-12 lg:p-16 flex items-center">
+                                        <div className="relative w-full overflow-hidden bg-linear-to-br from-orange-600 via-orange-500 to-orange-600 text-white aspect-16/6 p-4 sm:p-6 md:p-12 lg:p-16 flex items-center">
                                             {/* Premium Ambient Background Blobs */}
                                             <div
-                                                className={`absolute end-[-10%] top-[-20%] w-[60%] h-[70%] rounded-full bg-primary/15 blur-[130px] pointer-events-none transition-all duration-1000 ${isActive ? 'scale-110 translate-x-2' : 'scale-95 translate-x-0'
+                                                className={`absolute inset-e-[-10%] top-[-20%] w-[60%] h-[70%] rounded-full bg-primary/15 blur-[130px] pointer-events-none transition-all duration-1000 ${isActive ? 'scale-110 translate-x-2' : 'scale-95 translate-x-0'
                                                     }`}
                                             />
                                             <div
-                                                className={`absolute start-[-15%] bottom-[-20%] w-[50%] h-[60%] rounded-full bg-indigo-500/10 blur-[110px] pointer-events-none transition-all duration-1000 ${isActive ? 'scale-110 -translate-x-2' : 'scale-95 translate-x-0'
+                                                className={`absolute inset-s-[-15%] bottom-[-20%] w-[50%] h-[60%] rounded-full bg-indigo-500/10 blur-[110px] pointer-events-none transition-all duration-1000 ${isActive ? 'scale-110 -translate-x-2' : 'scale-95 translate-x-0'
                                                     }`}
                                             />
-                                            <div className="absolute end-[40%] bottom-[10%] w-[30%] h-[40%] rounded-full bg-primary/5 blur-[90px] pointer-events-none" />
+                                            <div className="absolute inset-e-[40%] bottom-[10%] w-[30%] h-[40%] rounded-full bg-primary/5 blur-[90px] pointer-events-none" />
 
                                             {/* Content Block (Centered on mobile, left-aligned on desktop, right-aligned on RTL desktop) */}
                                             <div className="relative z-10 w-full">
@@ -169,7 +171,7 @@ export default function DealsBanner({ initialDeals }: { initialDeals: Deal[] }) 
                             <button
                                 onClick={() => swiperInstance?.slidePrev()}
                                 disabled={activeIndex === 0}
-                                className="absolute start-4 top-1/2 -translate-y-1/2 z-20 hidden md:flex h-12 w-12 items-center justify-center rounded-full bg-slate-950/40 backdrop-blur-md border border-white/10 text-white shadow-lg cursor-pointer transition-all duration-300 hover:bg-primary hover:scale-105 active:scale-95 hover:border-primary/20 opacity-0 group-hover/banner:opacity-100 disabled:opacity-0 disabled:pointer-events-none"
+                                className="absolute inset-s-4 top-1/2 -translate-y-1/2 z-20 hidden md:flex h-12 w-12 items-center justify-center rounded-full bg-slate-950/40 backdrop-blur-md border border-white/10 text-white shadow-lg cursor-pointer transition-all duration-300 hover:bg-slate-950/80 hover:scale-105 active:scale-95 hover:border-slate-950/20 opacity-0 group-hover/banner:opacity-100 disabled:opacity-0 disabled:pointer-events-none"
                                 aria-label="Previous slide"
                             >
                                 {isRTL ? <ArrowRight size={20} /> : <ArrowLeft size={20} />}
@@ -178,7 +180,7 @@ export default function DealsBanner({ initialDeals }: { initialDeals: Deal[] }) 
                             <button
                                 onClick={() => swiperInstance?.slideNext()}
                                 disabled={activeIndex === activeDeals.length - 1}
-                                className="absolute end-4 top-1/2 -translate-y-1/2 z-20 hidden md:flex h-12 w-12 items-center justify-center rounded-full bg-slate-950/40 backdrop-blur-md border border-white/10 text-white shadow-lg cursor-pointer transition-all duration-300 hover:bg-primary hover:scale-105 active:scale-95 hover:border-primary/20 opacity-0 group-hover/banner:opacity-100 disabled:opacity-0 disabled:pointer-events-none"
+                                className="absolute inset-e-4 top-1/2 -translate-y-1/2 z-20 hidden md:flex h-12 w-12 items-center justify-center rounded-full bg-slate-950/40 backdrop-blur-md border border-white/10 text-white shadow-lg cursor-pointer transition-all duration-300 hover:bg-slate-950/80 hover:scale-105 active:scale-95 hover:border-slate-950/20 opacity-0 group-hover/banner:opacity-100 disabled:opacity-0 disabled:pointer-events-none"
                                 aria-label="Next slide"
                             >
                                 {isRTL ? <ArrowLeft size={20} /> : <ArrowRight size={20} />}
@@ -188,14 +190,14 @@ export default function DealsBanner({ initialDeals }: { initialDeals: Deal[] }) 
 
                     {/* Premium Pagination Indicator (Pills style) */}
                     {activeDeals.length > 1 && (
-                        <div className="absolute bottom-6 start-1/2 -translate-x-1/2 z-20 flex gap-2">
+                        <div className="absolute -bottom-6 inset-s-1/2 -translate-x-1/2 z-20 flex gap-2">
                             {activeDeals.map((_, idx) => (
                                 <button
                                     key={idx}
                                     onClick={() => swiperInstance?.slideTo(idx)}
                                     className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${activeIndex === idx
-                                        ? "w-8 bg-white shadow-[0_0_8px_rgba(255,255,255,0.6)]"
-                                        : "w-2.5 bg-white/35 hover:bg-white/60"
+                                        ? "w-8 bg-primary shadow-[0_0_8px_rgba(255,255,255,0.6)]"
+                                        : "w-2.5 bg-primary/35 hover:bg-primary/60"
                                         }`}
                                     aria-label={`Go to slide ${idx + 1}`}
                                 />
