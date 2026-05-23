@@ -10,10 +10,12 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useUser } from "@/hooks/use-auth";
+import { useNotifications } from "@/hooks/useNotifications";
 import { Link, usePathname } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import {
   BarChart3,
+  Bell,
   Globe,
   IdCard,
   LayoutDashboard,
@@ -36,6 +38,8 @@ export function AdminMobileBottomNav() {
   const { user, loading } = useUser();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const { unreadCount: unreadNotifCount } = useNotifications();
+  
 
   // Close sheet on navigation without useEffect to satisfy the linter
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -56,7 +60,12 @@ export function AdminMobileBottomNav() {
     },
     { href: "/admin/users", icon: Users, label: t("admin.users") },
     { href: "/admin/products", icon: ShoppingBag, label: t("admin.products") },
-    { href: "/admin/wallet", icon: Wallet, label: t("admin.wallet") },
+    {
+      href: "/admin/notifications",
+      icon: Bell,
+      label: t("notifications.title"),
+      badge: unreadNotifCount,
+    }
   ];
 
   return (
@@ -147,6 +156,11 @@ export function AdminMobileBottomNav() {
                   href: "/admin/orders",
                   icon: ShoppingCart,
                   label: t("admin.orders"),
+                },
+                { 
+                  href: "/admin/wallet",
+                  icon: Wallet,
+                  label: t("admin.wallet")
                 },
                 {
                   href: "/admin/applications",

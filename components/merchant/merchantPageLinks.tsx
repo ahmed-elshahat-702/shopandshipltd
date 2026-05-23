@@ -2,6 +2,7 @@
 
 import {
   BarChart3,
+  Bell,
   Globe,
   Headset,
   Heart,
@@ -45,6 +46,11 @@ export default function PageLinks() {
       name: t("merchant.messages"),
       href: "/merchant/messages",
       icon: ShoppingCart,
+    },
+    {
+      name: t("merchant.notifications"),
+      href: "/merchant/notifications",
+      icon: Bell,
     },
     {
       name: t("merchant.analytics"),

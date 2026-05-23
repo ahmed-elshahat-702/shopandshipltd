@@ -23,6 +23,7 @@ export default function PageLinks() {
     { name: t("admin.products"), href: "/admin/products" },
     { name: t("admin.merchants"), href: "/admin/merchants" },
     { name: t("admin.wallet"), href: "/admin/wallet" },
+    { name: t("admin.notifications"), href: "/admin/notifications" },
     { name: t("admin.deals"), href: "/admin/deals" },
     { name: t("admin.analytics"), href: "/admin/analytics" },
     {

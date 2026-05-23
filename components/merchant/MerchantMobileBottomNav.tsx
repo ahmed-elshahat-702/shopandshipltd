@@ -15,6 +15,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import {
   BarChart3,
+  Bell,
   Globe,
   Headset,
   Heart,
@@ -33,10 +34,12 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export function MerchantMobileBottomNav() {
   const t = useTranslations();
   const { user, loading } = useUser();
+  const { unreadCount: unreadNotifCount } = useNotifications();
   const unreadChatCount = useUnreadChatCount();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
@@ -74,7 +77,12 @@ export function MerchantMobileBottomNav() {
       label: t("merchant.messages") || "Messages",
       badge: unreadChatCount,
     },
-    { href: "/merchant/wallet", icon: Wallet, label: t("merchant.wallet") },
+    {
+      href: "/merchant/notifications",
+      icon: Bell,
+      label: t("notifications.title"),
+      badge: unreadNotifCount,
+    },
   ];
 
   return (
@@ -151,6 +159,11 @@ export function MerchantMobileBottomNav() {
                   href: "/merchant/my-store",
                   icon: Store,
                   label: t("merchant.myStore"),
+                },
+                {
+                  href: "/merchant/wallet",
+                  icon: Wallet,
+                  label: t("merchant.wallet"),
                 },
                 {
                   href: "/merchant/analytics",

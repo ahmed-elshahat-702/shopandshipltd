@@ -2,8 +2,6 @@
 
 import { logoutAction } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
-import { useUnreadChatCount } from "@/hooks/useUnreadChatCount";
-import { useNotifications } from "@/hooks/useNotifications";
 import {
   Sheet,
   SheetContent,
@@ -12,12 +10,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useUser } from "@/hooks/use-auth";
+import { useNotifications } from "@/hooks/useNotifications";
+import { useUnreadChatCount } from "@/hooks/useUnreadChatCount";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useCartStore } from "@/lib/store/useCartStore";
 import { useWishlistStore } from "@/lib/store/useWishlistStore";
-import { AnimatePresence, motion } from "framer-motion"; // Add Framer Motion
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  ArrowLeft,
   Bell,
   ChevronRight,
   Headset,
@@ -34,7 +33,7 @@ import {
   Store,
   User,
   Wallet,
-  Zap,
+  Zap
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -70,18 +69,12 @@ export function MobileBottomNav() {
       badge: cartCount,
     },
     {
-      href: "/wishlist",
-      icon: Heart,
-      label: t("wishlist.title"),
-      badge: wishlistCount,
-    },
-    {
-      href: "/customer/messages",
-      icon: MessageCircle,
-      label: t("chat.title"),
-      badge: unreadChatCount,
+      href: "/customer/notifications",
+      icon: Bell,
+      label: t("notifications.title"),
+      badge: unreadNotifCount,
       auth: true,
-    },
+    }
   ];
 
   return (
@@ -197,11 +190,10 @@ export function MobileBottomNav() {
                   label: t("nav.customerService"),
                 },
                 {
-                  href: "/customer/notifications",
-                  icon: Bell,
-                  label: t("notifications.title"),
-                  badge: unreadNotifCount,
-                  auth: true,
+                  href: "/wishlist",
+                  icon: Heart,
+                  label: t("wishlist.title"),
+                  badge: wishlistCount
                 },
                 {
                   href: "/customer/messages",
