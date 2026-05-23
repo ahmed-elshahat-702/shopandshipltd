@@ -2,8 +2,9 @@
 
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ProductCard from "@/components/ProductCard";
-import { ArrowLeft, Heart, MessageCircle } from "lucide-react";
+import { ArrowLeft, Heart, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import useSWR from "swr";
 
 import {
@@ -24,13 +25,19 @@ import { toast } from "sonner";
 interface MerchantClientProps {
   merchantId: string;
   initialMerchant: MerchantPublicDetails | null;
-  initialProducts: MerchantInventoryProduct[];
+  initialProductsData: {
+    products: MerchantInventoryProduct[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }
 
 export default function MerchantClient({
   merchantId,
   initialMerchant,
-  initialProducts,
+  initialProductsData,
 }: MerchantClientProps) {
   const t = useTranslations();
   const router = useRouter();
@@ -52,6 +59,8 @@ export default function MerchantClient({
   const merchant =
     merchantData && "merchant" in merchantData ? merchantData.merchant : null;
 
+  const [page, setPage] = useState(1);
+
   const { data: productsData, isLoading: productsLoading } = useSWR<{
     products: MerchantInventoryProduct[];
     total: number;
@@ -59,19 +68,16 @@ export default function MerchantClient({
     limit: number;
     totalPages: number;
   }>(
-    ["store-products", merchantId],
-    () => getMerchantProductsAction(merchantId, 1, 12),
+    ["store-products", merchantId, page],
+    () => getMerchantProductsAction(merchantId, page, 15),
     {
       revalidateOnFocus: false,
-      fallbackData: {
-        products: initialProducts,
-        total: initialProducts.length,
-        page: 1,
-        limit: 12,
-        totalPages: 1,
-      },
+      keepPreviousData: true,
+      fallbackData: page === 1 ? initialProductsData : undefined,
     },
   );
+
+  const totalPages = productsData?.totalPages || 1;
 
   const handleFollowToggle = async () => {
     if (!user) {
@@ -110,9 +116,9 @@ export default function MerchantClient({
         throw new Error(result.error);
       }
       toast.success(
-        result.isFollowing
-          ? t("merchant.followedSuccess")
-          : t("merchant.unfollowedSuccess"),
+          result.isFollowing
+              ? t("merchant.followedSuccess")
+              : t("merchant.unfollowedSuccess"),
       );
       mutateMerchant();
     } catch (error) {
@@ -124,7 +130,7 @@ export default function MerchantClient({
 
   const isLoading =
     (!initialMerchant && merchantLoading) ||
-    (!initialProducts.length && productsLoading);
+    (!initialProductsData.products.length && productsLoading);
 
   if (isLoading) {
     return (
@@ -218,7 +224,7 @@ export default function MerchantClient({
                   </div>
                 </div> */}
 
-                <div>
+                {/* <div>
                   <p className="text-gray-600">{t("merchant.followers")}</p>
                   <p className="font-semibold text-gray-900">
                     {merchant.followers.toLocaleString()}
@@ -237,7 +243,7 @@ export default function MerchantClient({
                   <p className="font-semibold text-gray-900">
                     {productsData?.products?.length || 0}
                   </p>
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -287,25 +293,50 @@ export default function MerchantClient({
             <p className="text-gray-600">{t("products.noResults")}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {productsData?.products?.map(
-              (variant: MerchantInventoryProduct) => {
-                const product = Array.isArray(variant.products)
-                  ? variant.products[0]
-                  : variant.products;
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+              {productsData?.products?.map(
+                (variant: MerchantInventoryProduct) => {
+                  const product = Array.isArray(variant.products)
+                    ? variant.products[0]
+                    : variant.products;
 
-                if (!product) return null;
+                  if (!product) return null;
 
-                return (
-                  <ProductCard
-                    key={variant.id}
-                    product={product as Product}
-                    lowestPrice={variant.selling_price}
-                    merchantId={merchant.id}
-                    merchantName={merchant.name}
-                  />
-                );
-              },
+                  return (
+                    <ProductCard
+                      key={variant.id}
+                      product={product as Product}
+                      lowestPrice={variant.selling_price}
+                      merchantId={merchant.id}
+                      merchantName={merchant.name}
+                    />
+                  );
+                },
+              )}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-4 mt-8">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="flex items-center justify-center rounded-xl h-12 w-12 border-2 border-gray-200 bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-gray-600 cursor-pointer"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <span className="font-bold text-gray-700">
+                  {t("common.page")} {page} {t("common.of")} {totalPages}
+                </span>
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="flex items-center justify-center rounded-xl h-12 w-12 border-2 border-gray-200 bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-gray-600 cursor-pointer"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
             )}
           </div>
         )}

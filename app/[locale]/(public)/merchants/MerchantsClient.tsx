@@ -22,11 +22,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Filter,
-  LayoutGrid,
   MapPin,
   Search,
   SlidersHorizontal,
-  Users,
+  Users
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -469,7 +468,7 @@ function MerchantCard({ merchant }: { merchant: MerchantSummary }) {
             {merchant.description || t("merchant.defaultMerchantDesc")}
           </p>
 
-          <div className="mt-auto pt-8 border-t border-gray-50 grid grid-cols-2 gap-6">
+          {/* <div className="mt-auto pt-8 border-t border-gray-50 grid grid-cols-2 gap-6">
             <div className="flex flex-col space-y-1">
               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">
                 {t("merchant.products")}
@@ -496,7 +495,7 @@ function MerchantCard({ merchant }: { merchant: MerchantSummary }) {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </Link>
