@@ -212,7 +212,7 @@ export async function forgotPasswordAction(formData: { email?: string }) {
 
     return {
       success: true,
-      message: "Password reset email sent. Check your inbox.",
+      message: "Password reset code sent. Check your inbox.",
     };
   } catch (error) {
     console.error("[Forgot Password Error]:", error);
@@ -251,6 +251,39 @@ export async function verifyOtpAction(formData: {
     };
   } catch (error) {
     console.error("[Verify OTP Error]:", error);
+    return { error: "Internal server error" };
+  }
+}
+
+export async function verifyRecoveryOtpAction(formData: {
+  email?: string;
+  otp?: string;
+}) {
+  try {
+    const { email, otp } = formData;
+
+    if (!email || !otp) {
+      return { error: "Email and OTP are required" };
+    }
+
+    const supabase = await createClient();
+
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token: otp,
+      type: "recovery",
+    });
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    return {
+      success: true,
+      message: "Code verified successfully",
+    };
+  } catch (error) {
+    console.error("[Verify Recovery OTP Error]:", error);
     return { error: "Internal server error" };
   }
 }

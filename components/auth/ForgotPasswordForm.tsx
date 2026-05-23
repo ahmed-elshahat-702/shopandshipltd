@@ -1,11 +1,12 @@
 "use client";
 
-import { forgotPasswordAction } from "@/app/actions/auth";
-import { Link } from "@/i18n/navigation";
+import { forgotPasswordAction, verifyRecoveryOtpAction } from "@/app/actions/auth";
+import { Link, useRouter } from "@/i18n/navigation";
 import {
   forgotPasswordSchema,
   type ForgotPasswordInput,
 } from "@/lib/validations/auth";
+import OTPInput from "@/components/auth/OTPInput";
 import { Loader2, Mail, RefreshCw, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -14,13 +15,26 @@ import { toast } from "sonner";
 
 type FieldErrors = Partial<Record<keyof ForgotPasswordInput, string>>;
 
-export default function ForgotPasswordForm() {
+interface ForgotPasswordFormProps {
+  step: 'email' | 'otp';
+  setStep: (step: 'email' | 'otp') => void;
+  email: string;
+  setEmail: (email: string) => void;
+}
+
+export default function ForgotPasswordForm({
+  step,
+  setStep,
+  email,
+  setEmail,
+}: ForgotPasswordFormProps) {
   const t = useTranslations();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
-  const [email, setEmail] = useState("");
   const [userCaptcha, setUserCaptcha] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const [captcha, setCaptcha] = useState(() => {
@@ -74,8 +88,8 @@ export default function ForgotPasswordForm() {
         generateCaptcha();
         setUserCaptcha("");
       } else {
-        toast.success(response.message || t("messages.passwordResetLinkSent"));
-        setEmail("");
+        toast.success(response.message || t("messages.resetCodeSent") || "Reset code sent to your email");
+        setStep('otp');
         generateCaptcha();
         setUserCaptcha("");
       }
@@ -86,6 +100,92 @@ export default function ForgotPasswordForm() {
       setIsLoading(false);
     }
   };
+
+  const handleResend = async () => {
+    if (!email || isLoading) return;
+
+    setIsLoading(true);
+    try {
+      const response = await forgotPasswordAction({ email });
+
+      if (response.error) {
+        toast.error(response.error);
+      } else {
+        toast.success(t("auth.codeResent") || "Reset code has been resent to your email");
+      }
+    } catch (error) {
+      console.error("Resend error:", error);
+      toast.error("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOTPComplete = async (otp: string) => {
+    if (!email) {
+      toast.error("Email is required");
+      return;
+    }
+
+    setOtpLoading(true);
+
+    try {
+      const response = await verifyRecoveryOtpAction({ email, otp });
+
+      if (response.error) {
+        toast.error(response.error);
+      } else {
+        toast.success(response.message || "Code verified successfully");
+        const resetPath = next
+          ? `/reset-password?next=${encodeURIComponent(next)}`
+          : "/reset-password";
+        router.push(resetPath);
+      }
+    } catch (error) {
+      console.error("OTP verification error:", error);
+      toast.error("An unexpected error occurred. Please try again.");
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  if (step === 'otp') {
+    return (
+      <div className="space-y-6">
+        <OTPInput onComplete={handleOTPComplete} />
+
+        <div className="text-center space-y-4">
+          {otpLoading ? (
+            <div className="flex items-center justify-center gap-2 text-primary font-medium">
+              <Loader2 size={20} className="animate-spin" />
+              {t("common.processing") || "Verifying..."}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <p className="text-sm text-muted-foreground">
+                Didn&apos;t receive the code?{" "}
+                <button
+                  type="button"
+                  className="text-primary hover:underline font-semibold disabled:opacity-50"
+                  onClick={handleResend}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Resending..." : t("auth.resendCode")}
+                </button>
+              </p>
+              <button
+                type="button"
+                onClick={() => setStep('email')}
+                className="text-sm text-primary hover:underline font-medium"
+              >
+                {t("auth.back") || "Back"}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -148,7 +248,7 @@ export default function ForgotPasswordForm() {
             placeholder={t("auth.captchaPlaceholder") || "Enter the code above"}
             maxLength={6}
             required
-            className="flex-1 px-4 py-2 border border-border bg-background rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none font-mono"
+            className="w-full px-4 py-2 border border-border bg-background rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none font-mono"
           />
         </div>
       </div>
